@@ -1,0 +1,51 @@
+create table expenses(
+EXPENSE_ID int not null auto_increment,
+PRIMARY KEY (EXPENSE_ID),
+title varchar(20),
+description varchar(50),
+amount double,
+date date
+);
+
+create table sales(id int not null auto_increment,
+primary key(id),
+itemname varchar(20),
+description1 varchar(60),
+description2 varchar(60),
+saleprice double,
+date date,
+purchaseprice double,
+manufacturer varchar(20),
+quantity int(10),
+totalprice double
+);
+
+create table manufacturer(
+manufacturer_id int NOT NULL AUTO_INCREMENT,
+primary key(manufacturer_id),
+m_name varchar(20),
+contact_person1 varchar(20),
+contact_person2 varchar(20),
+t_number int(20),
+cell_number int(15),
+address varchar(20),
+web varchar(15),
+account_number varchar(20)
+);
+
+CREATE TABLE PRODUCT (
+PRODUCT_ID INT NOT NULL AUTO_INCREMENT,
+PRIMARY KEY(PRODUCT_ID),
+P_NAME VARCHAR(20),
+DESCRIPTION1 VARCHAR(60),
+DESCRIPTION VARCHAR(60),
+MANUFACTURER_ID INT(8),
+CETAGORY_ID INT(8),
+WARRANTY INT(2)
+);
+
+CREATE TABLE CATEGORY (
+CATEGORY_ID INT(8),
+PRIMARY KEY(CATEGORY_ID),
+CATEGORY_NAME VARCHAR(20)
+);
