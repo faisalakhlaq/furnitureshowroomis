@@ -5,7 +5,8 @@ import gui.panels.DesktopTabbedPane;
 
 import java.awt.event.ActionEvent;
 
-import database.caller.ISCaller;
+import callers.ISCaller;
+
 
 public class ClosePanelCaller extends ISCaller {
 

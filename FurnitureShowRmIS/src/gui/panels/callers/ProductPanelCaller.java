@@ -5,8 +5,9 @@ import gui.panels.ProductPanel;
 
 import java.awt.event.ActionEvent;
 
+import callers.ISCaller;
+
 import model.Product;
-import database.caller.ISCaller;
 
 public class ProductPanelCaller extends ISCaller {
 

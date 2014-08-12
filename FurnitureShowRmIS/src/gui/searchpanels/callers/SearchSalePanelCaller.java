@@ -5,7 +5,8 @@ import gui.searchpanels.SearchSalePanel;
 
 import java.awt.event.ActionEvent;
 
-import database.caller.ISCaller;
+import callers.ISCaller;
+
 
 public class SearchSalePanelCaller extends ISCaller {
 

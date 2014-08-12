@@ -5,8 +5,9 @@ import gui.panels.DesktopTabbedPane;
 
 import java.awt.event.ActionEvent;
 
+import callers.ISCaller;
+
 import model.Category;
-import database.caller.ISCaller;
 
 public class CategoryPanelCaller extends ISCaller {
     private Category category = null;

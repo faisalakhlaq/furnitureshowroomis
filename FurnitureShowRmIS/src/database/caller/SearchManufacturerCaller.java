@@ -7,6 +7,8 @@ import gui.searchpanels.SearchManufacturerPanel;
 
 import java.awt.event.ActionEvent;
 
+import callers.ISCaller;
+
 import model.Manufacturer;
 import database.ManufacturerHandler;
 

@@ -8,8 +8,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import callers.ISCaller;
+
 import utils.Helper;
-import database.caller.ISCaller;
 
 @SuppressWarnings("serial")
 public abstract class AbstractSearchPanel extends AbstractPanel {

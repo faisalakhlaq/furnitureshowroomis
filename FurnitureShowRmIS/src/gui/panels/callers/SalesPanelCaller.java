@@ -5,8 +5,9 @@ import gui.panels.SalePanel;
 
 import java.awt.event.ActionEvent;
 
+import callers.ISCaller;
+
 import model.Sale;
-import database.caller.ISCaller;
 
 public class SalesPanelCaller extends ISCaller {
     private Sale s = null;

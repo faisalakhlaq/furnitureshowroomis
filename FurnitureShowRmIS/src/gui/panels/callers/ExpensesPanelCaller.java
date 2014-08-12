@@ -5,8 +5,9 @@ import gui.panels.ExpensesPanel;
 
 import java.awt.event.ActionEvent;
 
+import callers.ISCaller;
+
 import model.Expenses;
-import database.caller.ISCaller;
 
 public class ExpensesPanelCaller extends ISCaller {
 
