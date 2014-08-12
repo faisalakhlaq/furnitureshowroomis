@@ -7,6 +7,8 @@ import gui.searchpanels.SearchCategoryPanel;
 
 import java.awt.event.ActionEvent;
 
+import callers.ISCaller;
+
 import model.Category;
 import database.CategoryHandler;
 

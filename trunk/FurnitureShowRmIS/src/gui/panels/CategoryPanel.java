@@ -3,6 +3,7 @@ package gui.panels;
 import gui.AbstractPanel;
 import gui.GuiPanel;
 import gui.dailogue.MessageDialog;
+import gui.deletepanels.callers.DeleteCategoryPanelCaller;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -39,7 +40,7 @@ public class CategoryPanel extends AbstractPanel {
 
     private Category category = null;
 
-    private JLabel resultMsgLbl;
+    private JLabel resultMsgLbl = null;
 
     public CategoryPanel() {
 	addPanels();
@@ -69,6 +70,8 @@ public class CategoryPanel extends AbstractPanel {
 	categoryIdTxt = new JTextField(8);
 	categoryNameTxt = new JTextField(20);
 
+	resultMsgLbl = new JLabel();
+
 	centerPanel.setLayout(new GridBagLayout());
 	GridBagConstraints c = new GridBagConstraints();
 
@@ -84,8 +87,12 @@ public class CategoryPanel extends AbstractPanel {
 	setGridBagConstraints(c, 1, 1, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(categoryNameTxt, c);
 
-	return centerPanel;
+	setGridBagConstraints(c, 1, 1, GridBagConstraints.LINE_START, 15, 10);
+	c.gridwidth = 2;
+	centerPanel.add(resultMsgLbl, c);
+	resultMsgLbl.setVisible(false);
 
+	return centerPanel;
     }
 
     @Override
@@ -93,43 +100,50 @@ public class CategoryPanel extends AbstractPanel {
 	GuiPanel buttonPanel = new GuiPanel();
 
 	editBtn = new JButton("Edit");
-	editBtn.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-
-	    }
-	});
+	// saveBtn.addActionListener(new ActionListener() {
+	// @Override
+	// public void actionPerformed(ActionEvent arg0) {
+	// String newCategoryID = categoryIdTxt.getText();
+	// String oldName = schemeNamecbx.getSelectedItem().toString();
+	//
+	// SchemeHandler handler = new SchemeHandler();
+	// try {
+	// handler.updateSchemeName(oldName, newName);
+	// clearTextFields();
+	// populateSchemeNamesCbx();
+	// displayMessage(true);
+	// DesktopTabbedPane pane = DesktopTabbedPane.getInstance();
+	// pane.refreshPanels();
+	// } catch (Exception e) {
+	// new MessageDialog("Error", e.getMessage());
+	// }
+	// }
+	// });
 
 	updateBtn = new JButton("Update");
 	updateBtn.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		
+
 	    }
 	});
 	deleteBtn = new JButton("Delete");
-	deleteBtn.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-
-	    }
-	});
+	deleteBtn.addActionListener(new DeleteCategoryPanelCaller());
 	saveBtn = new JButton("Save");
 	saveBtn.addActionListener(new ActionListener() {
-	    
+
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		try {
 		    Category c = new Category();
 
+		    // String cId = categoryIdTxt.getText();
 		    String categoryName = categoryNameTxt.getText();
 		    if (Helper.isEmpty(categoryName)) {
 			throw new Exception("Please provide category name");
 		    }
 		    c.setCategoryName(categoryName);
-		   
+
 		    CategoryHandler categoryhandler = new CategoryHandler();
 		    categoryhandler.saveCategory(c);
 		    clearTextFields();
@@ -139,8 +153,7 @@ public class CategoryPanel extends AbstractPanel {
 		}
 	    }
 	});
-		
-	
+
 	buttonPanel.add(editBtn);
 	buttonPanel.add(updateBtn);
 	buttonPanel.add(deleteBtn);

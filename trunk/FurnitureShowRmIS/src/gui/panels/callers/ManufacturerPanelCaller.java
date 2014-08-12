@@ -5,8 +5,9 @@ import gui.panels.ManufacturerPanel;
 
 import java.awt.event.ActionEvent;
 
+import callers.ISCaller;
+
 import model.Manufacturer;
-import database.caller.ISCaller;
 
 public class ManufacturerPanelCaller extends ISCaller {
     private Manufacturer manufacturer = null;
