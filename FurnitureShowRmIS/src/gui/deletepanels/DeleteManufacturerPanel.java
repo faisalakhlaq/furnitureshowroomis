@@ -5,22 +5,22 @@ import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 
 import utils.Helper;
-import database.CategoryHandler;
-import database.caller.DeleteCategoryCaller;
+import database.ManufacturerHandler;
+import database.caller.DeleteManufacturerCaller;
 
-public class DeleteCategoryPanel extends AbstractDeletePanel {
-
-    public DeleteCategoryPanel() {
+public class DeleteManufacturerPanel extends AbstractDeletePanel {
+    public DeleteManufacturerPanel() {
 	super();
-	addButtonListener(new DeleteCategoryCaller(this));
+	addButtonListener(new DeleteManufacturerCaller(this));
+
     }
 
     @Override
     protected DefaultComboBoxModel<Integer> getComboBoxModel() {
 	DefaultComboBoxModel<Integer> model = null;
-	CategoryHandler handler = new CategoryHandler();
+	ManufacturerHandler handler = new ManufacturerHandler();
 	try {
-	    Vector<Integer> ids = handler.getAllCategoryIds();
+	    Vector<Integer> ids = handler.getAllManufacturerIds();
 	    model = new DefaultComboBoxModel<Integer>(ids);
 	} catch (Exception e) {
 	    model = new DefaultComboBoxModel<Integer>();
@@ -28,11 +28,11 @@ public class DeleteCategoryPanel extends AbstractDeletePanel {
 	return model;
     }
 
-    public int getCategoryId() throws Exception {
+    public int getManufacturerId() throws Exception {
 	int id = 0;
 	String strId = getId();
 	if (!Helper.isDigit(strId)) {
-	    throw new Exception("The Category ID should be a digit");
+	    throw new Exception("The Manufacturer ID should be a digit");
 	} else {
 	    id = Integer.valueOf(strId);
 	}

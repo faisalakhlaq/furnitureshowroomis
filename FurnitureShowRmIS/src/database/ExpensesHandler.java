@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
@@ -15,6 +17,57 @@ public class ExpensesHandler {
     private DbConnection db = null;
 
     public ExpensesHandler() {
+    }
+
+    public Vector<Integer> getAllExpensesIds() throws Exception {
+	Vector<Integer> ids = null;
+	db = DbConnection.getInstance();
+
+	Connection con = db.getConnection();
+
+	Statement stmt = null;
+
+	if (con == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    stmt = con.createStatement();
+	    String query = "SELECT EXPENSE_ID FROM expenses";
+	    System.out.println("Query Executed: " + query);
+	    ResultSet rs = stmt.executeQuery(query);
+
+	    if (rs != null) {
+		ids = new Vector<Integer>();
+		while (rs.next()) {
+		    ids.add(rs.getInt("EXPENSE_ID"));
+		}
+	    }
+	} catch (Exception e1) {
+	    Logger.getGlobal().severe(
+		    "Unable to retrieve expenses ids from the database. "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception(
+		    "Unable to retrieve expenses ids from the database!<p>"
+			    + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.closeConnection();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while closing the connection or statement: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
+	    }
+	}
+	return ids;
     }
 
     public Expenses searchExpenses(int id) throws Exception {
@@ -120,6 +173,48 @@ public class ExpensesHandler {
 				+ e1.getMessage());
 		System.out.println("SQLException: " + e1.getMessage());
 		e1.printStackTrace();
+	    }
+	}
+    }
+
+    public void deleteExpenses(int eId) throws Exception {
+	DbConnection db = DbConnection.getInstance();
+	Connection conn = db.getConnection();
+	PreparedStatement stmt = null;
+
+	if (conn == null) {
+	    throw new Exception("Unable to get database connection");
+	}
+	try {
+	    stmt = (PreparedStatement) conn
+		    .prepareStatement("DELETE from expenses where EXPENSE_ID = '"
+			    + eId + "';");
+
+	    stmt = (PreparedStatement) conn
+		    .prepareStatement("DELETE from expenses where EXPENSE_ID = "
+			    + eId + ";");
+	    stmt.executeUpdate();
+	} catch (SQLException e1) {
+	    Logger.getGlobal().severe(
+		    "Error occured while deleting the expenses: "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception("Unable to delete expenses: " + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.getInstance();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while delete expenses: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
 	    }
 	}
     }

@@ -13,12 +13,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import utils.Helper;
-
 import model.Manufacturer;
+import utils.Helper;
 import database.ManufacturerHandler;
 
 @SuppressWarnings("serial")
@@ -51,7 +51,7 @@ public class ManufacturerPanel extends AbstractPanel {
 
     private JTextField mIdTxt = null;
 
-    private JTextField mNameTxt = null;
+    private JComboBox<String> mNameCbx = null;
 
     private JTextField contactPerson1Txt = null;
 
@@ -88,8 +88,6 @@ public class ManufacturerPanel extends AbstractPanel {
 
 	mIdTxt.setText(String.valueOf(manufacturer.getmId()));
 
-	mNameTxt.setText(manufacturer.getmName());
-
 	contactPerson1Txt.setText(manufacturer.getContactPerson1());
 
 	contactPerson2Txt.setText(manufacturer.getContactPerson2());
@@ -125,7 +123,7 @@ public class ManufacturerPanel extends AbstractPanel {
 
 	mIdTxt = new JTextField(15);
 	mIdTxt.setEnabled(false);
-	mNameTxt = new JTextField(20);
+	mNameCbx = new JComboBox<String>();
 	contactPerson1Txt = new JTextField(20);
 	contactPerson2Txt = new JTextField(20);
 	tNumberTxt = new JTextField(20);
@@ -147,7 +145,7 @@ public class ManufacturerPanel extends AbstractPanel {
 	centerPanel.add(mNameLbl, c);
 
 	setGridBagConstraints(c, 1, 1, GridBagConstraints.LINE_END, 5, 10);
-	centerPanel.add(mNameTxt, c);
+	centerPanel.add(mNameCbx, c);
 
 	setGridBagConstraints(c, 0, 2, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(contactPerson1Lbl, c);
@@ -226,11 +224,6 @@ public class ManufacturerPanel extends AbstractPanel {
 		try {
 		    Manufacturer m = new Manufacturer();
 
-		    String mName = mNameTxt.getText();
-		    if (Helper.isEmpty(mName)) {
-			throw new Exception("Please provide Manufacturer name");
-		    }
-		    m.setmName(mName);
 		    String contactPerson1 = contactPerson1Txt.getText();
 		    m.setContactPerson1(contactPerson1);
 		    String contactPerson2 = contactPerson2Txt.getText();
@@ -286,7 +279,6 @@ public class ManufacturerPanel extends AbstractPanel {
 
     private void clearTextFields() {
 	mIdTxt.setText(null);
-	mNameTxt.setText(null);
 	contactPerson1Txt.setText(null);
 	contactPerson2Txt.setText(null);
 	tNumberTxt.setText(null);

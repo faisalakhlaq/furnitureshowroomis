@@ -1,7 +1,10 @@
 package gui.menubar;
 
 import gui.deletepanels.callers.DeleteCategoryPanelCaller;
+import gui.deletepanels.callers.DeleteExpensesPanelCaller;
+import gui.deletepanels.callers.DeleteManufacturerPanelCaller;
 import gui.deletepanels.callers.DeleteProductPanelCaller;
+
 import gui.panels.callers.CategoryPanelCaller;
 import gui.panels.callers.ExpensesPanelCaller;
 import gui.panels.callers.ManufacturerPanelCaller;
@@ -102,7 +105,7 @@ public class MainViewMenuBar extends ISMenuBar {
 
 	JMenuItem deleteManfacturer = new JMenuItem("Delete Manfacturer");
 	manufacturer.add(deleteManfacturer);
-	deleteManfacturer.addActionListener(new ManufacturerPanelCaller());
+	deleteManfacturer.addActionListener(new DeleteManufacturerPanelCaller());
 
 	JMenuItem updateManfacturer = new JMenuItem("Update Manfacturer");
 	manufacturer.add(updateManfacturer);
@@ -133,7 +136,7 @@ public class MainViewMenuBar extends ISMenuBar {
 
 	JMenuItem deleteExpenses = new JMenuItem("Delete Expenses");
 	expenses.add(deleteExpenses);
-	deleteExpenses.addActionListener(new ExpensesPanelCaller());
+	deleteExpenses.addActionListener(new DeleteExpensesPanelCaller());
 	
 	JMenuItem searchExpenses = new JMenuItem("Search Expenses");
 	expenses.add(searchExpenses);
