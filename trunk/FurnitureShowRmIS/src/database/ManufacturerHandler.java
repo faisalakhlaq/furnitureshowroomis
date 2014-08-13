@@ -17,6 +17,57 @@ public class ManufacturerHandler {
 
     }
 
+    public Vector<Integer> getAllManufacturerIds() throws Exception {
+	Vector<Integer> ids = null;
+	db = DbConnection.getInstance();
+
+	Connection con = db.getConnection();
+
+	Statement stmt = null;
+
+	if (con == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    stmt = con.createStatement();
+	    String query = "SELECT manufacturer_id FROM manufacturer";
+	    System.out.println("Query Executed: " + query);
+	    ResultSet rs = stmt.executeQuery(query);
+
+	    if (rs != null) {
+		ids = new Vector<Integer>();
+		while (rs.next()) {
+		    ids.add(rs.getInt("manufacturer_id"));
+		}
+	    }
+	} catch (Exception e1) {
+	    Logger.getGlobal().severe(
+		    "Unable to retrieve manufacturer ids from the database. "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception(
+		    "Unable to retrieve manufacturer ids from the database!<p>"
+			    + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.closeConnection();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while closing the connection or statement: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
+	    }
+	}
+	return ids;
+    }
+
     public Manufacturer searchManufacturer(int id) throws Exception {
 	Manufacturer manufacturer = null;
 	db = DbConnection.getInstance();
@@ -130,6 +181,49 @@ public class ManufacturerHandler {
 		throw new Exception(
 			"Error occured while closing the database conneciton: "
 				+ e1.getMessage());
+	    }
+	}
+    }
+
+    public void deleteManufacturer(int mId) throws Exception {
+	DbConnection db = DbConnection.getInstance();
+	Connection conn = db.getConnection();
+	PreparedStatement stmt = null;
+
+	if (conn == null) {
+	    throw new Exception("Unable to get database connection");
+	}
+	try {
+	    stmt = (PreparedStatement) conn
+		    .prepareStatement("DELETE from manufacturer where manufacturer_id = '"
+			    + mId + "';");
+
+	    stmt = (PreparedStatement) conn
+		    .prepareStatement("DELETE from manufacturer where manufacturer_id = "
+			    + mId + ";");
+	    stmt.executeUpdate();
+	} catch (SQLException e1) {
+	    Logger.getGlobal().severe(
+		    "Error occured while deleting the manufacturer: "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception("Unable to delete manfacturer: "
+		    + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.getInstance();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while delete Category: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
 	    }
 	}
     }

@@ -27,7 +27,7 @@ import database.ProductHandler;
 @SuppressWarnings("serial")
 public class ProductPanel extends AbstractPanel {
 
-    private JButton updateBtn = null;
+    private JButton editBtn = null;
 
     private JButton deleteBtn = null;
 
@@ -165,8 +165,8 @@ public class ProductPanel extends AbstractPanel {
     public GuiPanel getButtonPanel() {
 	GuiPanel buttonPanel = new GuiPanel();
 
-	updateBtn = new JButton("Update");
-	updateBtn.addActionListener(new ActionListener() {
+	editBtn = new JButton("Edit");
+	editBtn.addActionListener(new ActionListener() {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
@@ -221,7 +221,7 @@ public class ProductPanel extends AbstractPanel {
 	});
 	exitBtn = new JButton("Exit");
 	exitBtn.addActionListener(new ClosePanelCaller());
-	buttonPanel.add(updateBtn);
+	buttonPanel.add(editBtn);
 	buttonPanel.add(deleteBtn);
 	buttonPanel.add(saveBtn);
 	buttonPanel.add(exitBtn);
