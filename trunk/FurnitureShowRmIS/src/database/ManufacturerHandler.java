@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import model.Manufacturer;
@@ -183,5 +185,56 @@ public class ManufacturerHandler {
 				+ e1.getMessage());
 	    }
 	}
+    }
+
+    public Vector<String> getManufacturerNames() throws Exception {
+	Vector<String> names = null;
+	db = DbConnection.getInstance();
+
+	Connection con = db.getConnection();
+
+	Statement stmt = null;
+
+	if (con == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    stmt = con.createStatement();
+	    String query = "SELECT m_name FROM manufacturer";
+	    System.out.println("Query Executed: " + query);
+	    ResultSet rs = stmt.executeQuery(query);
+
+	    if (rs != null) {
+		names = new Vector<String>();
+		while (rs.next()) {
+		    names.add(rs.getString("m_name"));
+		}
+	    }
+	} catch (Exception e1) {
+	    Logger.getGlobal().severe(
+		    "Unable to retrieve Category ids from the database. "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception(
+		    "Unable to retrieve Category ids from the database!<p>"
+			    + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.closeConnection();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while closing the connection or statement: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
+	    }
+	}
+	return names;
     }
 }

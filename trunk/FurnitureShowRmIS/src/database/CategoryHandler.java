@@ -181,10 +181,6 @@ public class CategoryHandler {
 	}
 	try {
 	    stmt = (PreparedStatement) conn
-		    .prepareStatement("DELETE from category where Category_ID = '"
-			    + cId + "';");
-
-	    stmt = (PreparedStatement) conn
 		    .prepareStatement("DELETE from category where CATEGORY_ID = "
 			    + cId + ";");
 	    stmt.executeUpdate();
@@ -258,5 +254,56 @@ public class CategoryHandler {
 				+ e1.getMessage());
 	    }
 	}
+    }
+
+    public Vector<String> getCategoryNames() throws Exception {
+	Vector<String> names = null;
+	db = DbConnection.getInstance();
+
+	Connection con = db.getConnection();
+
+	Statement stmt = null;
+
+	if (con == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    stmt = con.createStatement();
+	    String query = "SELECT CATEGORY_NAME FROM category";
+	    System.out.println("Query Executed: " + query);
+	    ResultSet rs = stmt.executeQuery(query);
+
+	    if (rs != null) {
+		names = new Vector<String>();
+		while (rs.next()) {
+		    names.add(rs.getString("CATEGORY_NAME"));
+		}
+	    }
+	} catch (Exception e1) {
+	    Logger.getGlobal().severe(
+		    "Unable to retrieve Category ids from the database. "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception(
+		    "Unable to retrieve Category ids from the database!<p>"
+			    + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.closeConnection();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while closing the connection or statement: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
+	    }
+	}
+	return names;
     }
 }

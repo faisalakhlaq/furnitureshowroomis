@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import model.Product;
@@ -13,6 +15,57 @@ public class ProductHandler {
 
     public ProductHandler() {
 
+    }
+
+    public Vector<Integer> getAllProductsIds() throws Exception {
+	Vector<Integer> ids = null;
+	db = DbConnection.getInstance();
+
+	Connection con = db.getConnection();
+
+	Statement stmt = null;
+
+	if (con == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    stmt = con.createStatement();
+	    String query = "SELECT PRODUCT_ID FROM PRODUCT";
+	    System.out.println("Query Executed: " + query);
+	    ResultSet rs = stmt.executeQuery(query);
+
+	    if (rs != null) {
+		ids = new Vector<Integer>();
+		while (rs.next()) {
+		    ids.add(rs.getInt("PRODUCT_ID"));
+		}
+	    }
+	} catch (Exception e1) {
+	    Logger.getGlobal().severe(
+		    "Unable to retrieve Category ids from the database. "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception(
+		    "Unable to retrieve Category ids from the database!<p>"
+			    + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.closeConnection();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while closing the connection or statement: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
+	    }
+	}
+	return ids;
     }
 
     public Product searchProduct(int id) throws Exception {
@@ -36,12 +89,12 @@ public class ProductHandler {
 	    if (rs.next()) {
 		product = new Product();
 		product.setProductId(rs.getInt("product id"));
-		product.setpName(rs.getString("P Name"));
+		product.setProductName(rs.getString("P Name"));
 		product.setDescription1(rs.getString("Description1"));
 		product.setDescription2(rs.getString("Description2"));
-		product.setManufacturerId(rs.getInt("Manufacturer Id"));
-		product.setCategoryId(rs.getInt("Category Id"));
-		product.setWarrantyId(rs.getInt("Warranty Id"));
+		product.setManufacturerName(rs.getString("Manufacturer Name"));
+		product.setCategoryName(rs.getString("Category Name"));
+		product.setWarranty(rs.getInt("Warranty "));
 
 	    }
 	} catch (Exception e1) {
@@ -72,10 +125,104 @@ public class ProductHandler {
 	return product;
     }
 
-    public void saveProduct(int productId, String pName, String description1,
-	    String description, int manufacturerId, int cetagoryId,
-	    int warrantyId) throws Exception {
+    public void deleteCategory(int pId) throws Exception {
+	DbConnection db = DbConnection.getInstance();
+	Connection conn = db.getConnection();
+	PreparedStatement stmt = null;
 
+	if (conn == null) {
+	    throw new Exception("Unable to get database connection");
+	}
+	try {
+	    stmt = (PreparedStatement) conn
+		    .prepareStatement("DELETE from PRODUCT where PRODUCT_ID = '"
+			    + pId + "';");
+
+	    stmt = (PreparedStatement) conn
+		    .prepareStatement("DELETE from PRODUCT where PRODUCT_ID = "
+			    + pId + ";");
+	    stmt.executeUpdate();
+	} catch (SQLException e1) {
+	    Logger.getGlobal().severe(
+		    "Error occured while deleting the Product: "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception("Unable to delete Product: " + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.getInstance();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while delete Product: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
+	    }
+	}
+    }
+
+    // public void saveProduct(int productId, String pName, String description1,
+    // String description, int manufacturerId, int cetagoryId,
+    // int warrantyId) throws Exception {
+    //
+    // DbConnection db = DbConnection.getInstance();
+    // Connection conn = (Connection) db.getConnection();
+    // PreparedStatement stmt = null;
+    //
+    // if (conn == null) {
+    // throw new Exception("Unable to connect to the database");
+    // }
+    // try {
+    // stmt = (PreparedStatement) conn
+    // .prepareStatement("INSERT INTO PRODUCT(productId, pName, description1, description2, manufacturerId, cetagoryId, warrantyId) "
+    // + " VALUES (?,?,?,?,?,?,?)");
+    //
+    // stmt.setInt(1, productId);
+    // stmt.setString(2, pName);
+    // stmt.setString(3, description1);
+    // stmt.setString(4, description);
+    // stmt.setInt(5, manufacturerId);
+    // stmt.setInt(6, cetagoryId);
+    // stmt.setInt(7, warrantyId);
+    //
+    // stmt.executeUpdate();
+    //
+    // System.out.println("Executing Query: " + stmt.toString());
+    // } catch (SQLException e1) {
+    // Logger.getGlobal().severe(
+    // "Error occured while inserting product into product table: "
+    // + e1.getMessage());
+    // System.out.println("SQLException: " + e1.getMessage());
+    // e1.printStackTrace();
+    // throw new Exception(
+    // "Error occured while inserting product into product table: "
+    // + e1.getMessage());
+    // } finally {
+    // try {
+    // DbConnection.getInstance();
+    // if (stmt != null) {
+    // stmt.close();
+    // }
+    // } catch (SQLException e1) {
+    // Logger.getGlobal().severe(
+    // "Error occured while closing the database conneciton: "
+    // + e1.getMessage());
+    // System.out.println("SQLException: " + e1.getMessage());
+    // e1.printStackTrace();
+    // throw new Exception(
+    // "Error occured while closing the database conneciton: "
+    // + e1.getMessage());
+    // }
+    // }
+    // }
+
+    public void saveProduct(Product p) throws Exception {
 	DbConnection db = DbConnection.getInstance();
 	Connection conn = (Connection) db.getConnection();
 	PreparedStatement stmt = null;
@@ -85,16 +232,15 @@ public class ProductHandler {
 	}
 	try {
 	    stmt = (PreparedStatement) conn
-		    .prepareStatement("INSERT INTO PRODUCT(productId, pName, description1, description2, manufacturerId, cetagoryId, warrantyId) "
-			    + " VALUES (?,?,?,?,?,?,?)");
+		    .prepareStatement("INSERT INTO PRODUCT(p_name, description1, description2, manufacturer_name, cetagory_name, warranty) "
+			    + " VALUES (?,?,?,?,?,?)");
 
-	    stmt.setInt(1, productId);
-	    stmt.setString(2, pName);
-	    stmt.setString(3, description1);
-	    stmt.setString(4, description);
-	    stmt.setInt(5, manufacturerId);
-	    stmt.setInt(6, cetagoryId);
-	    stmt.setInt(7, warrantyId);
+	    stmt.setString(1, p.getProductName());
+	    stmt.setString(2, p.getDescription1());
+	    stmt.setString(3, p.getDescription2());
+	    stmt.setString(4, p.getManufacturerName());
+	    stmt.setString(5, p.getCategoryName());
+	    stmt.setInt(6, p.getWarranty());
 
 	    stmt.executeUpdate();
 
@@ -127,38 +273,27 @@ public class ProductHandler {
 	}
     }
 
-    public void saveProduct(Product p) throws Exception {
+    public void deleteProduct(int productID) throws Exception {
 	DbConnection db = DbConnection.getInstance();
-	Connection conn = (Connection) db.getConnection();
+	Connection conn = db.getConnection();
 	PreparedStatement stmt = null;
 
 	if (conn == null) {
-	    throw new Exception("Unable to connect to the database");
+	    throw new Exception("Unable to get database connection");
 	}
 	try {
 	    stmt = (PreparedStatement) conn
-		    .prepareStatement("INSERT INTO PRODUCT(productId, pName, description1, description2, manufacturerId, cetagoryId, warrantyId) "
-			    + " VALUES (?,?,?,?,?,?,?)");
-
-	    stmt.setString(1, p.getpName());
-	    stmt.setString(2, p.getDescription1());
-	    stmt.setString(3, p.getDescription2());
-	    stmt.setInt(4, p.getManufacturerId());
-	    stmt.setInt(5, p.getCategoryId());
-	    stmt.setInt(6, p.getWarrantyId());
+		    .prepareStatement("DELETE from product where product_ID = "
+			    + productID + ";");
 
 	    stmt.executeUpdate();
-
-	    System.out.println("Executing Query: " + stmt.toString());
 	} catch (SQLException e1) {
 	    Logger.getGlobal().severe(
-		    "Error occured while inserting product into product table: "
+		    "Error occured while deleting the Category: "
 			    + e1.getMessage());
 	    System.out.println("SQLException: " + e1.getMessage());
 	    e1.printStackTrace();
-	    throw new Exception(
-		    "Error occured while inserting product into product table: "
-			    + e1.getMessage());
+	    throw new Exception("Unable to delete category: " + e1.getMessage());
 	} finally {
 	    try {
 		DbConnection.getInstance();
@@ -167,14 +302,64 @@ public class ProductHandler {
 		}
 	    } catch (SQLException e1) {
 		Logger.getGlobal().severe(
-			"Error occured while closing the database conneciton: "
+			"Error occured while delete Category: "
 				+ e1.getMessage());
 		System.out.println("SQLException: " + e1.getMessage());
 		e1.printStackTrace();
-		throw new Exception(
-			"Error occured while closing the database conneciton: "
-				+ e1.getMessage());
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
 	    }
 	}
+    }
+
+    public Vector<String> getProductNames() throws Exception {
+	Vector<String> names = null;
+	db = DbConnection.getInstance();
+
+	Connection con = db.getConnection();
+
+	Statement stmt = null;
+
+	if (con == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    stmt = con.createStatement();
+	    String query = "SELECT p_name FROM PRODUCT";
+	    System.out.println("Query Executed: " + query);
+	    ResultSet rs = stmt.executeQuery(query);
+
+	    if (rs != null) {
+		names = new Vector<String>();
+		while (rs.next()) {
+		    names.add(rs.getString("p_name"));
+		}
+	    }
+	} catch (Exception e1) {
+	    Logger.getGlobal().severe(
+		    "Unable to retrieve Category ids from the database. "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception(
+		    "Unable to retrieve Category ids from the database!<p>"
+			    + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.closeConnection();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while closing the connection or statement: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
+	    }
+	}
+	return names;
     }
 }
