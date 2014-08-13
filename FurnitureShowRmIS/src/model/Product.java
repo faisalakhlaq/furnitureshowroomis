@@ -2,12 +2,12 @@ package model;
 
 public class Product implements ModelClass {
     private int productId;
-    private String pName = null;
+    private String productName = null;
     private String description1 = null;
     private String description2 = null;
-    private int manufacturerId;
-    private int categoryId;
-    private int warrantyId;
+    private String manufacturerName;
+    private String categoryName;
+    private int warranty;
 
     public Product() {
 
@@ -21,12 +21,12 @@ public class Product implements ModelClass {
 	this.productId = productId;
     }
 
-    public String getpName() {
-	return pName;
+    public String getProductName() {
+	return productName;
     }
 
-    public void setpName(String pName) {
-	this.pName = pName;
+    public void setProductName(String pName) {
+	this.productName = pName;
     }
 
     public String getDescription1() {
@@ -45,27 +45,27 @@ public class Product implements ModelClass {
 	this.description2 = description2;
     }
 
-    public int getManufacturerId() {
-	return manufacturerId;
+    public String getManufacturerName() {
+	return manufacturerName;
     }
 
-    public void setManufacturerId(int manufacturerId) {
-	this.manufacturerId = manufacturerId;
+    public void setManufacturerName(String manufacturerName) {
+	this.manufacturerName = manufacturerName;
     }
 
-    public int getCategoryId() {
-	return categoryId;
+    public String getCategoryName() {
+	return categoryName;
     }
 
-    public void setCategoryId(int cetagoryId) {
-	this.categoryId = cetagoryId;
+    public void setCategoryName(String cetagoryName) {
+	this.categoryName = cetagoryName;
     }
 
-    public int getWarrantyId() {
-	return warrantyId;
+    public int getWarranty() {
+	return warranty;
     }
 
-    public void setWarrantyId(int warrantyId) {
-	this.warrantyId = warrantyId;
+    public void setWarranty(int warranty) {
+	this.warranty = warranty;
     }
 }

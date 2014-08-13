@@ -1,6 +1,7 @@
 package gui.menubar;
 
 import gui.deletepanels.callers.DeleteCategoryPanelCaller;
+import gui.deletepanels.callers.DeleteProductPanelCaller;
 import gui.panels.callers.CategoryPanelCaller;
 import gui.panels.callers.ExpensesPanelCaller;
 import gui.panels.callers.ManufacturerPanelCaller;
@@ -75,7 +76,7 @@ public class MainViewMenuBar extends ISMenuBar {
 
 	JMenuItem deleteProduct = new JMenuItem("Delete Product");
 	product.add(deleteProduct);
-	deleteProduct.addActionListener(new ProductPanelCaller());
+	deleteProduct.addActionListener(new DeleteProductPanelCaller());
 
 	JMenuItem updateProduct = new JMenuItem("Update Product");
 	product.add(updateProduct);

@@ -121,6 +121,7 @@ public class ManufacturerPanel extends AbstractPanel {
 	addressLbl = new JLabel("Address");
 	webLbl = new JLabel("Web");
 	accountNumberLbl = new JLabel("Account Number");
+	resultMsgLbl = new JLabel();
 
 	mIdTxt = new JTextField(15);
 	mIdTxt.setEnabled(false);
@@ -136,113 +137,63 @@ public class ManufacturerPanel extends AbstractPanel {
 	centerPanel.setLayout(new GridBagLayout());
 	GridBagConstraints c = new GridBagConstraints();
 
-	// c.gridx = 0;
-	// c.gridy = 0;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 0, 0, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(mIdLbl, c);
 
-	// c.gridx = 1;
-	// c.gridy = 0;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 1, 0, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(mIdTxt, c);
 
-	// c.gridx = 0;
-	// c.gridy = 1;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 0, 1, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(mNameLbl, c);
 
-	// c.gridx = 1;
-	// c.gridy = 1;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 1, 1, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(mNameTxt, c);
 
-	// c.gridx = 0;
-	// c.gridy = 2;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 0, 2, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(contactPerson1Lbl, c);
 
-	// c.gridx = 1;
-	// c.gridy = 2;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 1, 2, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(contactPerson1Txt, c);
 
-	// c.gridx = 0;
-	// c.gridy = 3;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 0, 3, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(contactPerson2Lbl, c);
 
-	// c.gridx = 1;
-	// c.gridy = 3;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 1, 3, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(contactPerson2Txt, c);
 
-	// c.gridx = 0;
-	// c.gridy = 4;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 0, 4, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(tNumberLbl, c);
 
-	// c.gridx = 1;
-	// c.gridy = 4;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 1, 4, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(tNumberTxt, c);
 
-	// c.gridx = 0;
-	// c.gridy = 5;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 0, 5, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(cellnumberLbl, c);
 
-	// c.gridx = 1;
-	// c.gridy = 5;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 1, 5, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(cellNumberTxt, c);
 
-	// c.gridx = 0;
-	// c.gridy = 6;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 0, 6, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(addressLbl, c);
 
-	// c.gridx = 1;
-	// c.gridy = 6;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 1, 6, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(addressTxt, c);
 
-	// c.gridx = 0;
-	// c.gridy = 7;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 0, 7, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(webLbl, c);
 
-	// c.gridx = 1;
-	// c.gridy = 7;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 1, 7, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(webTxt, c);
 
-	// c.gridx = 0;
-	// c.gridy = 8;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 0, 8, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(accountNumberLbl, c);
 
-	// c.gridx = 1;
-	// c.gridy = 8;
-	// c.gridwidth = 1;
 	setGridBagConstraints(c, 1, 8, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(accountNumberTxt, c);
+
+	c.gridwidth = 2;
+	setGridBagConstraints(c, 1, 9, GridBagConstraints.LINE_START, 5, 10);
+	centerPanel.add(resultMsgLbl, c);
 
 	return centerPanel;
     }
