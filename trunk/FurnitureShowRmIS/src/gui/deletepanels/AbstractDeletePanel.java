@@ -7,18 +7,19 @@ import gui.panels.callers.ClosePanelCaller;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ItemListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import utils.Helper;
 import callers.ISCaller;
 
-import utils.Helper;
-
 @SuppressWarnings("serial")
-public abstract class AbstractDeletePanel extends AbstractPanel {
+public abstract class AbstractDeletePanel extends AbstractPanel implements
+	ItemListener {
 
     private JComboBox<Integer> idCbx = null;
     private JTextField nameTxt = null;
@@ -27,6 +28,7 @@ public abstract class AbstractDeletePanel extends AbstractPanel {
 
     public AbstractDeletePanel() {
 	addPanels();
+	idCbx.addItemListener(this);
     }
 
     @Override
@@ -97,6 +99,10 @@ public abstract class AbstractDeletePanel extends AbstractPanel {
     public void refreshComboBoxModel() {
 	idCbx.setModel(getComboBoxModel());
 	nameTxt.setText(null);
+    }
+
+    protected void setNameText(String name) {
+	nameTxt.setText(name);
     }
 
     private void setGridBagConstraints(GridBagConstraints c, int gridx,
