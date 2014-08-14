@@ -1,9 +1,11 @@
 package gui.deletepanels;
 
+import java.awt.event.ItemEvent;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 
+import model.Product;
 import utils.Helper;
 import database.ProductHandler;
 import database.caller.DeleteProductCaller;
@@ -38,5 +40,19 @@ public class DeleteProductPanel extends AbstractDeletePanel {
 	    id = Integer.valueOf(strId);
 	}
 	return id;
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent arg0) {
+	
+	try {
+	    int id = getProductId();
+	    ProductHandler handler = new ProductHandler();
+	    Product p = handler.searchProduct(id);
+	    setNameText(p.getProductName());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    setNameText(null);
+	}
     }
 }

@@ -1,5 +1,6 @@
 package gui.deletepanels;
 
+import java.awt.event.ItemEvent;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -37,5 +38,11 @@ public class DeleteManufacturerPanel extends AbstractDeletePanel {
 	    id = Integer.valueOf(strId);
 	}
 	return id;
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent arg0) {
+	// TODO Auto-generated method stub
+	
     }
 }

@@ -88,13 +88,9 @@ public class ProductHandler {
 	    ResultSet rs = st.executeQuery();
 	    if (rs.next()) {
 		product = new Product();
-		product.setProductId(rs.getInt("product id"));
-		product.setProductName(rs.getString("P Name"));
-		product.setDescription1(rs.getString("Description1"));
-		product.setDescription2(rs.getString("Description2"));
-		product.setManufacturerName(rs.getString("Manufacturer Name"));
-		product.setCategoryName(rs.getString("Category Name"));
-		product.setWarranty(rs.getInt("Warranty "));
+		product.setProductId(rs.getInt("PRODUCT_ID"));
+		product.setProductName(rs.getString("P_NAME"));
+		
 
 	    }
 	} catch (Exception e1) {
