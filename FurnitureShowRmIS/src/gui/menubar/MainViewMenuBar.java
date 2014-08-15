@@ -7,6 +7,7 @@ import gui.deletepanels.callers.DeleteProductPanelCaller;
 
 import gui.panels.callers.CategoryPanelCaller;
 import gui.panels.callers.ExpensesPanelCaller;
+import gui.panels.callers.MakePaymentsPanelCaller;
 import gui.panels.callers.ManufacturerPanelCaller;
 import gui.panels.callers.ProductPanelCaller;
 import gui.panels.callers.SalesPanelCaller;
@@ -34,7 +35,20 @@ public class MainViewMenuBar extends ISMenuBar {
 	addManufacturerMenu();
 	addProductMenu();
 	addCategoryMenu();
+	addPaymentsMenu();
 	addHelpMenu();
+    }
+
+    private void addPaymentsMenu() {
+	JMenu payments = new JMenu("Payments");
+	this.add(payments);
+	payments.setMnemonic(KeyEvent.VK_C);
+
+	JMenuItem makePayments = new JMenuItem("Make Payment");
+	payments.add(makePayments);
+	makePayments.addActionListener(new MakePaymentsPanelCaller());
+
+	
     }
 
     private void addCategoryMenu() {
