@@ -51,7 +51,7 @@ public class ManufacturerPanel extends AbstractPanel {
 
     private JTextField mIdTxt = null;
 
-    private JComboBox<String> mNameCbx = null;
+    private JTextField mNameTxt = null;
 
     private JTextField contactPerson1Txt = null;
 
@@ -87,6 +87,8 @@ public class ManufacturerPanel extends AbstractPanel {
 	    return;
 
 	mIdTxt.setText(String.valueOf(manufacturer.getmId()));
+	
+	mNameTxt.setText(manufacturer.getmName());
 
 	contactPerson1Txt.setText(manufacturer.getContactPerson1());
 
@@ -123,7 +125,7 @@ public class ManufacturerPanel extends AbstractPanel {
 
 	mIdTxt = new JTextField(15);
 	mIdTxt.setEnabled(false);
-	mNameCbx = new JComboBox<String>();
+	mNameTxt = new JTextField(20);
 	contactPerson1Txt = new JTextField(20);
 	contactPerson2Txt = new JTextField(20);
 	tNumberTxt = new JTextField(20);
@@ -145,7 +147,7 @@ public class ManufacturerPanel extends AbstractPanel {
 	centerPanel.add(mNameLbl, c);
 
 	setGridBagConstraints(c, 1, 1, GridBagConstraints.LINE_END, 5, 10);
-	centerPanel.add(mNameCbx, c);
+	centerPanel.add(mNameTxt, c);
 
 	setGridBagConstraints(c, 0, 2, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(contactPerson1Lbl, c);

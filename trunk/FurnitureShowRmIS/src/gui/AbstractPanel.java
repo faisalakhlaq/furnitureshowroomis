@@ -3,6 +3,8 @@ package gui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import javax.swing.DefaultComboBoxModel;
+
 @SuppressWarnings("serial")
 public abstract class AbstractPanel extends GuiPanel implements CustomPanel {
 
@@ -29,4 +31,6 @@ public abstract class AbstractPanel extends GuiPanel implements CustomPanel {
 	c.gridwidth = 1;
 	add(buttonPanel, c);
     }
+
+   
 }
