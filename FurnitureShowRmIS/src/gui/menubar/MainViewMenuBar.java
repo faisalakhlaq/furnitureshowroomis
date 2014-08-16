@@ -4,7 +4,7 @@ import gui.deletepanels.callers.DeleteCategoryPanelCaller;
 import gui.deletepanels.callers.DeleteExpensesPanelCaller;
 import gui.deletepanels.callers.DeleteManufacturerPanelCaller;
 import gui.deletepanels.callers.DeleteProductPanelCaller;
-
+import gui.deletepanels.callers.DeleteSalePanelCaller;
 import gui.panels.callers.CategoryPanelCaller;
 import gui.panels.callers.ExpensesPanelCaller;
 import gui.panels.callers.MakePaymentsPanelCaller;
@@ -71,7 +71,7 @@ public class MainViewMenuBar extends ISMenuBar {
 	JMenuItem updateCategory = new JMenuItem("Update Category");
 	category.add(updateCategory);
 	updateCategory.addActionListener(new CategoryPanelCaller());
-	
+
 	JMenuItem searchCategory = new JMenuItem("Search Category");
 	category.add(searchCategory);
 	searchCategory.addActionListener(new SearchProductPanelCaller());
@@ -119,7 +119,8 @@ public class MainViewMenuBar extends ISMenuBar {
 
 	JMenuItem deleteManfacturer = new JMenuItem("Delete Manfacturer");
 	manufacturer.add(deleteManfacturer);
-	deleteManfacturer.addActionListener(new DeleteManufacturerPanelCaller());
+	deleteManfacturer
+		.addActionListener(new DeleteManufacturerPanelCaller());
 
 	JMenuItem updateManfacturer = new JMenuItem("Update Manfacturer");
 	manufacturer.add(updateManfacturer);
@@ -151,7 +152,7 @@ public class MainViewMenuBar extends ISMenuBar {
 	JMenuItem deleteExpenses = new JMenuItem("Delete Expenses");
 	expenses.add(deleteExpenses);
 	deleteExpenses.addActionListener(new DeleteExpensesPanelCaller());
-	
+
 	JMenuItem searchExpenses = new JMenuItem("Search Expenses");
 	expenses.add(searchExpenses);
 	searchExpenses.addActionListener(new SearchExpensesPanelCaller());
@@ -177,7 +178,7 @@ public class MainViewMenuBar extends ISMenuBar {
 
 	JMenuItem deleteSale = new JMenuItem("Delete Sale");
 	sale.add(deleteSale);
-	deleteSale.addActionListener(new SalesPanelCaller());
+	deleteSale.addActionListener(new DeleteSalePanelCaller());
     }
 
     private void addHelpMenu() {

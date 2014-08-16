@@ -3,18 +3,28 @@ package model;
 import java.util.Date;
 
 public class Sale implements ModelClass {
+    private int saleId;
     private String item = null;
     private String description1 = null;
     private String description2 = null;
     private double salePrice;
     private Date date = null;
-    private double purchaseprice;
-    private String manufacturer = null;
+    private double purchasePrice;
+    private String manufacturerName = null;
     private int quantity;
-    private double totalprice;
+    private double totalPrice;
+    private double totalPurchasePrice;
 
     public Sale() {
 
+    }
+
+    public int getSaleId() {
+	return saleId;
+    }
+
+    public void setSaleId(int saleId) {
+	this.saleId = saleId;
     }
 
     public String getItem() {
@@ -57,20 +67,20 @@ public class Sale implements ModelClass {
 	this.date = date;
     }
 
-    public double getPurchaseprice() {
-	return purchaseprice;
+    public double getPurchasePrice() {
+	return purchasePrice;
     }
 
     public void setPurchaseprice(double purchaseprice) {
-	this.purchaseprice = purchaseprice;
+	this.purchasePrice = purchaseprice;
     }
 
     public String getManufacturer() {
-	return manufacturer;
+	return manufacturerName;
     }
 
     public void setManufacturer(String manufacturer) {
-	this.manufacturer = manufacturer;
+	this.manufacturerName = manufacturer;
     }
 
     public int getQuantity() {
@@ -82,11 +92,19 @@ public class Sale implements ModelClass {
     }
 
     public double getTotalprice() {
-	return totalprice;
+	return totalPrice;
     }
 
     public void setTotalprice(double totalprice) {
-	this.totalprice = totalprice;
+	this.totalPrice = totalprice;
+    }
+
+    public double getTotalPurchasePrice() {
+	return totalPurchasePrice;
+    }
+
+    public void setTotalPurchasePrice(double totalPurchasePrice) {
+	this.totalPurchasePrice = totalPurchasePrice;
     }
 
 }

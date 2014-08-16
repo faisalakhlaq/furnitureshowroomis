@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import model.Sale;
@@ -13,6 +15,57 @@ public class SaleHandler {
     private DbConnection db = null;
 
     public SaleHandler() {
+    }
+
+    public Vector<Integer> getAllSaleIds() throws Exception {
+	Vector<Integer> ids = null;
+	db = DbConnection.getInstance();
+
+	Connection con = db.getConnection();
+
+	Statement stmt = null;
+
+	if (con == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    stmt = con.createStatement();
+	    String query = "SELECT sale_id FROM sales";
+	    System.out.println("Query Executed: " + query);
+	    ResultSet rs = stmt.executeQuery(query);
+
+	    if (rs != null) {
+		ids = new Vector<Integer>();
+		while (rs.next()) {
+		    ids.add(rs.getInt("sale_id"));
+		}
+	    }
+	} catch (Exception e1) {
+	    Logger.getGlobal().severe(
+		    "Unable to retrieve sales ids from the database. "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception(
+		    "Unable to retrieve sales ids from the database!<p>"
+			    + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.closeConnection();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while closing the connection or statement: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
+	    }
+	}
+	return ids;
     }
 
     public Sale searchSale(int id) throws Exception {
@@ -74,65 +127,6 @@ public class SaleHandler {
 	return sale;
     }
 
-    public void saveSales(String iName, String desc1, String desc2,
-	    double sPrice, double pPrice, java.util.Date date, String manufact,
-	    String quantity, String tPrice) throws Exception {
-
-	DbConnection db = DbConnection.getInstance();
-	Connection conn = (Connection) db.getConnection();
-	PreparedStatement stmt = null;
-
-	if (conn == null) {
-	    throw new Exception("Unable to connect to the database");
-	}
-	try {
-	    stmt = (PreparedStatement) conn
-		    .prepareStatement("INSERT INTO sales(itemname, description1, description2, saleprice, purchaseprice, date, manufacturer, quantity, totalprice) "
-			    + " VALUES (?,?,?,?,?,?,?,?,?)");
-
-	    java.sql.Date d = new java.sql.Date(date.getTime());
-
-	    stmt.setString(1, iName);
-	    stmt.setString(2, desc1);
-	    stmt.setString(3, desc2);
-	    stmt.setDouble(4, sPrice);
-	    stmt.setDouble(5, pPrice);
-	    stmt.setDate(6, d);
-	    stmt.setString(7, manufact);
-	    stmt.setString(8, quantity);
-	    stmt.setString(9, tPrice);
-
-	    stmt.executeUpdate();
-
-	    System.out.println("Executing Query: " + stmt.toString());
-	} catch (SQLException e1) {
-	    Logger.getGlobal().severe(
-		    "Error occured while inserting sales into sale table: "
-			    + e1.getMessage());
-	    System.out.println("SQLException: " + e1.getMessage());
-	    e1.printStackTrace();
-	    throw new Exception(
-		    "Error occured while inserting sales into sale table: "
-			    + e1.getMessage());
-	} finally {
-	    try {
-		DbConnection.getInstance();
-		if (stmt != null) {
-		    stmt.close();
-		}
-	    } catch (SQLException e1) {
-		Logger.getGlobal().severe(
-			"Error occured while closing the database conneciton: "
-				+ e1.getMessage());
-		System.out.println("SQLException: " + e1.getMessage());
-		e1.printStackTrace();
-		throw new Exception(
-			"Error occured while closing the database conneciton: "
-				+ e1.getMessage());
-	    }
-	}
-    }
-
     public void saveSale(Sale s) throws Exception {
 	DbConnection db = DbConnection.getInstance();
 	Connection conn = (Connection) db.getConnection();
@@ -143,19 +137,25 @@ public class SaleHandler {
 	}
 	try {
 	    stmt = (PreparedStatement) conn
-		    .prepareStatement("INSERT INTO sales(itemname, description1, description2, saleprice, purchaseprice, date, manufacturer, quantity, totalprice) "
-			    + " VALUES (?,?,?,?,?,?,?,?,?)");
+		    .prepareStatement("INSERT INTO sales(itemname, description1, description2, saleprice, date, purchaseprice, manufacturer, quantity, totalpurchaseprice, totalprice ) "
+			    + " VALUES (?,?,?,?,?,?,?,?,?,?)");
 
 	    stmt.setString(1, s.getItem());
 	    stmt.setString(2, s.getDescription1());
 	    stmt.setString(3, s.getDescription2());
 	    stmt.setDouble(4, s.getSalePrice());
-	    stmt.setDouble(5, s.getPurchaseprice());
-	    stmt.setString(6, s.getManufacturer());
-	    stmt.setInt(7, s.getQuantity());
-	    stmt.setDouble(8, s.getTotalprice());
-	    stmt.setDate(9, (Date) s.getDate());
+	    stmt.setDate(5, (Date) s.getDate());
+	    stmt.setDouble(6, s.getPurchasePrice());
+	    stmt.setString(7, s.getManufacturer());
+	    stmt.setInt(8, s.getQuantity());
+	    stmt.setDouble(9, s.getTotalPurchasePrice());
+	    stmt.setDouble(10, s.getTotalprice());
 
+	    /*
+	     * itemname varchar(20), description1 varchar(60), description2
+	     * varchar(60), saleprice double, date date, purchaseprice double,
+	     * manufacturer varchar(20), quantity int(10), totalprice double
+	     */
 	    stmt.executeUpdate();
 
 	    System.out.println("Executing Query: " + stmt.toString());
@@ -186,4 +186,99 @@ public class SaleHandler {
 	    }
 	}
     }
+
+    public void deleteSale(int sId) throws Exception {
+	DbConnection db = DbConnection.getInstance();
+	Connection conn = db.getConnection();
+	PreparedStatement stmt = null;
+
+	if (conn == null) {
+	    throw new Exception("Unable to get database connection");
+	}
+	try {
+	    stmt = (PreparedStatement) conn
+		    .prepareStatement("DELETE from sales where sale_id = '"
+			    + sId + "';");
+
+	    stmt = (PreparedStatement) conn
+		    .prepareStatement("DELETE from sales where sale_id = "
+			    + sId + ";");
+	    stmt.executeUpdate();
+	} catch (SQLException e1) {
+	    Logger.getGlobal().severe(
+		    "Error occured while deleting the sales: "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception("Unable to delete sales: " + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.getInstance();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while delete sales: " + e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
+	    }
+	}
+    }
+
+    public Vector<String> getManufacturerNames() {
+	    Vector<String> names = null;
+		DbConnection db = DbConnection.getInstance();
+		Connection conn = db.getConnection();
+
+		String query = "Select manufacturer from sales;";
+		Statement st = null;
+		try {
+			st = conn.createStatement();
+			ResultSet rs = st.executeQuery(query);
+			if (rs != null) {
+				names = new Vector<String>();
+				while (rs.next()) {
+					names.add(rs.getString("manufacturer"));
+				}
+			}
+		} catch (SQLException e1) {
+			Logger.getGlobal().severe(
+					"Error occured while retrieving manufacturer names: "
+							+ e1.getMessage());
+			System.out.println("SQLException: " + e1.getMessage());
+			e1.printStackTrace();
+			try {
+			    throw new SQLException(
+			    		"Error occured while retrieving manufactrer names"
+			    				+ e1.getMessage());
+			} catch (SQLException e) {
+			    e.printStackTrace();
+			}
+		} finally {
+			try {
+				DbConnection.closeConnection();
+				if (st != null) {
+					st.close();
+				}
+			} catch (SQLException e1) {
+				Logger.getGlobal().severe(
+						"Error occured while closing the database connection: "
+								+ e1.getMessage());
+				System.out.println("SQLException: " + e1.getMessage());
+				e1.printStackTrace();
+				try {
+				    throw new SQLException(
+				    		"Error occured while closing the database connection"
+				    				+ e1.getMessage());
+				} catch (SQLException e) {
+				    e.printStackTrace();
+				}
+			}
+		}
+		return names;
+	}
+		
 }

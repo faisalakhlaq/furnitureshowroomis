@@ -69,6 +69,7 @@ public class ProductPanel extends AbstractPanel {
 
     public ProductPanel() {
 	addPanels();
+	enableTextFields(true);
 	populateManufacturerNamesCbx();
 	populateCategoryNamesCbx();
     }
@@ -79,6 +80,7 @@ public class ProductPanel extends AbstractPanel {
 	populateManufacturerNamesCbx();
 	populateCategoryNamesCbx();
 	fillTextFields();
+	enableTextFields(false);
     }
 
     private void fillTextFields() {
@@ -86,8 +88,14 @@ public class ProductPanel extends AbstractPanel {
 	pNameTxt.setText(product.getProductName());
 	description1Txt.setText(product.getDescription1());
 	description2Txt.setText(product.getDescription2());
-
 	warrantyTxt.setText(String.valueOf(product.getWarranty()));
+    }
+
+    private void enableTextFields(boolean enable) {
+	productIdTxt.setEnabled(false);
+	pNameTxt.setEnabled(enable);
+	description1Txt.setEnabled(enable);
+	description2Txt.setEnabled(enable);
     }
 
     @Override

@@ -128,10 +128,107 @@ public class ManufacturerHandler {
 	return manufacturer;
     }
 
-    public void saveManufacturer(int mId, String mName, String contactPerson1,
-	    String contactPerson2, int tNumber, int cellNumber, String address,
-	    String web, String accountNumber) throws Exception {
+    public void deleteCategory(int mId) throws Exception {
+	DbConnection db = DbConnection.getInstance();
+	Connection conn = db.getConnection();
+	PreparedStatement stmt = null;
 
+	if (conn == null) {
+	    throw new Exception("Unable to get database connection");
+	}
+	try {
+	    stmt = (PreparedStatement) conn
+		    .prepareStatement("DELETE from manufacturer where manufacturer_id = '"
+			    + mId + "';");
+
+	    stmt = (PreparedStatement) conn
+		    .prepareStatement("DELETE from manufacturer where manufacturer_id = "
+			    + mId + ";");
+	    stmt.executeUpdate();
+	} catch (SQLException e1) {
+	    Logger.getGlobal().severe(
+		    "Error occured while deleting the manufacturer: "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    throw new Exception("Unable to delete manufacturer: "
+		    + e1.getMessage());
+	} finally {
+	    try {
+		DbConnection.getInstance();
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while delete manufacturer: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new SQLException(
+			"Error occured while closing the connection or statement.");
+	    }
+	}
+    }
+
+    // public void saveManufacturer(int mId, String mName, String
+    // contactPerson1,
+    // String contactPerson2, int tNumber, int cellNumber, String address,
+    // String web, String accountNumber) throws Exception {
+    //
+    // DbConnection db = DbConnection.getInstance();
+    // Connection conn = (Connection) db.getConnection();
+    // PreparedStatement stmt = null;
+    //
+    // if (conn == null) {
+    // throw new Exception("Unable to connect to the database");
+    // }
+    // try {
+    // stmt = (PreparedStatement) conn
+    // .prepareStatement("INSERT INTO MANUFACTURER(mId, mName, contactPerson1, contactPerson2, tNumber, cellNumber, address, web, accountNumber) "
+    // + " VALUES (?,?,?,?,?,?,?,?,?)");
+    //
+    // stmt.setInt(1, mId);
+    // stmt.setString(2, mName);
+    // stmt.setString(3, contactPerson1);
+    // stmt.setString(4, contactPerson2);
+    // stmt.setInt(5, tNumber);
+    // stmt.setInt(6, cellNumber);
+    // stmt.setString(7, address);
+    // stmt.setString(8, web);
+    // stmt.setString(9, accountNumber);
+    //
+    // stmt.executeUpdate();
+    //
+    // System.out.println("Executing Query: " + stmt.toString());
+    // } catch (SQLException e1) {
+    // Logger.getGlobal().severe(
+    // "Error occured while inserting manufacturer into manufacturer table: "
+    // + e1.getMessage());
+    // System.out.println("SQLException: " + e1.getMessage());
+    // e1.printStackTrace();
+    // throw new Exception(
+    // "Error occured while inserting manufacturer into manufacturer table: "
+    // + e1.getMessage());
+    // } finally {
+    // try {
+    // DbConnection.getInstance();
+    // if (stmt != null) {
+    // stmt.close();
+    // }
+    // } catch (SQLException e1) {
+    // Logger.getGlobal().severe(
+    // "Error occured while closing the database conneciton: "
+    // + e1.getMessage());
+    // System.out.println("SQLException: " + e1.getMessage());
+    // e1.printStackTrace();
+    // throw new Exception(
+    // "Error occured while closing the database conneciton: "
+    // + e1.getMessage());
+    // }
+    // }
+    // }
+    public void saveManufacturer(Manufacturer m) throws Exception {
 	DbConnection db = DbConnection.getInstance();
 	Connection conn = (Connection) db.getConnection();
 	PreparedStatement stmt = null;
@@ -141,18 +238,17 @@ public class ManufacturerHandler {
 	}
 	try {
 	    stmt = (PreparedStatement) conn
-		    .prepareStatement("INSERT INTO MANUFACTURER(mId, mName, contactPerson1, contactPerson2, tNumber, cellNumber, address, web, accountNumber) "
-			    + " VALUES (?,?,?,?,?,?,?,?,?)");
+		    .prepareStatement("INSERT INTO MANUFACTURER(m_name, contact_person1, contact_person2, t_number, cell_number, address, web, account_number) "
+			    + " VALUES (?,?,?,?,?,?,?,?)");
 
-	    stmt.setInt(1, mId);
-	    stmt.setString(2, mName);
-	    stmt.setString(3, contactPerson1);
-	    stmt.setString(4, contactPerson2);
-	    stmt.setInt(5, tNumber);
-	    stmt.setInt(6, cellNumber);
-	    stmt.setString(7, address);
-	    stmt.setString(8, web);
-	    stmt.setString(9, accountNumber);
+	    stmt.setString(1, m.getmName());
+	    stmt.setString(2, m.getContactPerson1());
+	    stmt.setString(3, m.getContactPerson2());
+	    stmt.setInt(4, m.gettNumber());
+	    stmt.setInt(5, m.getCellNumber());
+	    stmt.setString(6, m.getAddress());
+	    stmt.setString(7, m.getWeb());
+	    stmt.setString(8, m.getAccountNumber());
 
 	    stmt.executeUpdate();
 
@@ -224,59 +320,6 @@ public class ManufacturerHandler {
 		e1.printStackTrace();
 		throw new SQLException(
 			"Error occured while closing the connection or statement.");
-	    }
-	}
-    }
-
-    public void saveManufacturer(Manufacturer m) throws Exception {
-	DbConnection db = DbConnection.getInstance();
-	Connection conn = (Connection) db.getConnection();
-	PreparedStatement stmt = null;
-
-	if (conn == null) {
-	    throw new Exception("Unable to connect to the database");
-	}
-	try {
-	    stmt = (PreparedStatement) conn
-		    .prepareStatement("INSERT INTO MANUFACTURER(m_name, contact_person1, contact_person2, t_number, cell_number, address, web, account_number) "
-			    + " VALUES (?,?,?,?,?,?,?,?)");
-
-	    stmt.setString(1, m.getmName());
-	    stmt.setString(2, m.getContactPerson1());
-	    stmt.setString(3, m.getContactPerson2());
-	    stmt.setInt(4, m.gettNumber());
-	    stmt.setInt(5, m.getCellNumber());
-	    stmt.setString(6, m.getAddress());
-	    stmt.setString(7, m.getWeb());
-	    stmt.setString(8, m.getAccountNumber());
-
-	    stmt.executeUpdate();
-
-	    System.out.println("Executing Query: " + stmt.toString());
-	} catch (SQLException e1) {
-	    Logger.getGlobal().severe(
-		    "Error occured while inserting manufacturer into manufacturer table: "
-			    + e1.getMessage());
-	    System.out.println("SQLException: " + e1.getMessage());
-	    e1.printStackTrace();
-	    throw new Exception(
-		    "Error occured while inserting manufacturer into manufacturer table: "
-			    + e1.getMessage());
-	} finally {
-	    try {
-		DbConnection.getInstance();
-		if (stmt != null) {
-		    stmt.close();
-		}
-	    } catch (SQLException e1) {
-		Logger.getGlobal().severe(
-			"Error occured while closing the database conneciton: "
-				+ e1.getMessage());
-		System.out.println("SQLException: " + e1.getMessage());
-		e1.printStackTrace();
-		throw new Exception(
-			"Error occured while closing the database conneciton: "
-				+ e1.getMessage());
 	    }
 	}
     }
