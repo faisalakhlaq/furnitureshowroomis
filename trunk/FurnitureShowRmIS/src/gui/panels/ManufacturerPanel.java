@@ -13,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -87,7 +86,7 @@ public class ManufacturerPanel extends AbstractPanel {
 	    return;
 
 	mIdTxt.setText(String.valueOf(manufacturer.getmId()));
-	
+
 	mNameTxt.setText(manufacturer.getmName());
 
 	contactPerson1Txt.setText(manufacturer.getContactPerson1());
@@ -331,3 +330,24 @@ public class ManufacturerPanel extends AbstractPanel {
 	return Integer.valueOf(mIdTxt.getText());
     }
 }
+
+// private void populateManufacturerNamesCbx() {
+// if (mNameCbx == null) {
+// mNameCbx = new JComboBox<String>();
+// }
+// ManufacturerHandler handler = new ManufacturerHandler();
+// Vector<String> names = null;
+// try {
+// names = handler.getManufacturerNames();
+// } catch (Exception e) {
+// new MessageDialog("Error", e.getMessage());
+// }
+// if (names == null) {
+// mNameCbx.setModel(new javax.swing.DefaultComboBoxModel<String>());
+// } else {
+// mNameCbx.setModel(new javax.swing.DefaultComboBoxModel<String>(
+// names));
+// }
+// }
+//
+// }

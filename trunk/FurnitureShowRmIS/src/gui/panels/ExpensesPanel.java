@@ -28,27 +28,27 @@ import database.ExpensesHandler;
 @SuppressWarnings("serial")
 public class ExpensesPanel extends AbstractPanel {
 
-    private JButton savebtn = null;
+    private JButton saveBtn = null;
 
     private JButton deleteBtn = null;
 
-    private JButton exitbtn = null;
+    private JButton exitBtn = null;
 
-    private JLabel titlelbl = null;
+    private JLabel titleLbl = null;
 
-    private JLabel amountlbl = null;
+    private JLabel amountLbl = null;
 
-    private JLabel discriptionlbl = null;
+    private JLabel discriptionLbl = null;
 
-    private JLabel datelbl = null;
+    private JLabel dateLbl = null;
 
-    private JTextField titletxt = null;
+    private JTextField titleTxt = null;
 
-    private JTextField amounttxt = null;
+    private JTextField amountTxt = null;
 
     private JTextField idTxt = null;
 
-    private JTextField discriptiontxt = null;
+    private JTextField discriptionTxt = null;
 
     private JXDatePicker datePicker = null;
 
@@ -58,49 +58,59 @@ public class ExpensesPanel extends AbstractPanel {
 
     public ExpensesPanel() {
 	addPanels();
+	enableTextFields(true);
     }
 
     public ExpensesPanel(Expenses e) {
 	addPanels();
 	this.expence = e;
 	fillTextFields();
+	enableTextFields(false);
     }
 
     private void fillTextFields() {
 	if (expence == null)
 	    return;
 
-	titletxt.setText(expence.getTitle());
+	titleTxt.setText(expence.getTitle());
 
-	amounttxt.setText(String.valueOf(expence.getAmount()));
+	amountTxt.setText(String.valueOf(expence.getAmount()));
 
 	idTxt.setText(String.valueOf(expence.getId()));
 
-	discriptiontxt.setText(expence.getDescription());
+	discriptionTxt.setText(expence.getDescription());
 
 	// private JTextField datetxt = null;
 
 	datePicker.setDate(expence.getDate());
     }
+    
+    private void enableTextFields(boolean enable) {
+	idTxt.setEnabled(false);
+	titleTxt.setEnabled(enable);
+	amountTxt.setEnabled(enable);
+	discriptionTxt.setEnabled(enable);
+   	datePicker.setEnabled(enable);
+       }
 
     public GuiPanel getButtonPanel() {
 	GuiPanel buttonPanel = new GuiPanel();
 
-	savebtn = new JButton("Save");
-	savebtn.addActionListener(new ActionListener() {
+	saveBtn = new JButton("Save");
+	saveBtn.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		try {
 		    Expenses e = new Expenses();
 
-		    String title = titletxt.getText();
+		    String title = titleTxt.getText();
 		    if (Helper.isEmpty(title)) {
 			throw new Exception("Please provide Expenses name");
 		    }
 		    e.setTitle(title);
-		    String description = discriptiontxt.getText();
+		    String description = discriptionTxt.getText();
 		    e.setDescription(description);
-		    String amount = amounttxt.getText();
+		    String amount = amountTxt.getText();
 		    if (!Helper.isEmpty(amount) && Helper.isDigit(amount)) {
 			e.setAmount(Integer.valueOf(amount));
 		    } else if (!Helper.isEmpty(amount)
@@ -122,12 +132,12 @@ public class ExpensesPanel extends AbstractPanel {
 
 	deleteBtn = new JButton("Delete");
 
-	exitbtn = new JButton("Exit");
-	exitbtn.addActionListener(new ClosePanelCaller());
+	exitBtn = new JButton("Exit");
+	exitBtn.addActionListener(new ClosePanelCaller());
 
-	buttonPanel.add(savebtn);
+	buttonPanel.add(saveBtn);
 	buttonPanel.add(deleteBtn);
-	buttonPanel.add(exitbtn);
+	buttonPanel.add(exitBtn);
 
 	return buttonPanel;
     }
@@ -135,17 +145,17 @@ public class ExpensesPanel extends AbstractPanel {
     public GuiPanel getCenterPanel() {
 	GuiPanel centerPanel = new GuiPanel();
 
-	titlelbl = new JLabel("Title");
-	amountlbl = new JLabel("Amount");
-	discriptionlbl = new JLabel("Description");
-	datelbl = new JLabel("Date");
+	titleLbl = new JLabel("Title");
+	amountLbl = new JLabel("Amount");
+	discriptionLbl = new JLabel("Description");
+	dateLbl = new JLabel("Date");
 	resultMsgLbl = new JLabel();
 	JLabel idLbl = new JLabel("Expense ID");
 
-	titletxt = new JTextField(15);
-	amounttxt = new JTextField(15);
+	titleTxt = new JTextField(15);
+	amountTxt = new JTextField(15);
 	idTxt = new JTextField();
-	discriptiontxt = new JTextField(15);
+	discriptionTxt = new JTextField(15);
 	datePicker = new JXDatePicker();
 
 	datePicker.setDate(Calendar.getInstance().getTime());
@@ -155,25 +165,25 @@ public class ExpensesPanel extends AbstractPanel {
 	GridBagConstraints c = new GridBagConstraints();
 
 	setGridBagConstraints(c, 0, 0, GridBagConstraints.LINE_START, 5, 0);
-	centerPanel.add(titlelbl, c);
+	centerPanel.add(titleLbl, c);
 
 	setGridBagConstraints(c, 1, 0, GridBagConstraints.LINE_END, 5, 10);
-	centerPanel.add(titletxt, c);
+	centerPanel.add(titleTxt, c);
 
 	setGridBagConstraints(c, 0, 1, GridBagConstraints.LINE_START, 5, 0);
-	centerPanel.add(amountlbl, c);
+	centerPanel.add(amountLbl, c);
 
 	setGridBagConstraints(c, 1, 1, GridBagConstraints.LINE_END, 5, 10);
-	centerPanel.add(amounttxt, c);
+	centerPanel.add(amountTxt, c);
 
 	setGridBagConstraints(c, 0, 2, GridBagConstraints.LINE_START, 5, 0);
-	centerPanel.add(discriptionlbl, c);
+	centerPanel.add(discriptionLbl, c);
 
 	setGridBagConstraints(c, 1, 2, GridBagConstraints.LINE_END, 5, 10);
-	centerPanel.add(discriptiontxt, c);
+	centerPanel.add(discriptionTxt, c);
 
 	setGridBagConstraints(c, 0, 3, GridBagConstraints.LINE_START, 5, 0);
-	centerPanel.add(datelbl, c);
+	centerPanel.add(dateLbl, c);
 
 	setGridBagConstraints(c, 1, 3, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(datePicker, c);
@@ -199,10 +209,10 @@ public class ExpensesPanel extends AbstractPanel {
     }
 
     private void clearTextFields() {
-	titletxt.setText(null);
-	discriptiontxt.setText(null);
+	titleTxt.setText(null);
+	discriptionTxt.setText(null);
 	idTxt.setText(null);
-	amounttxt.setText(null);
+	amountTxt.setText(null);
 
     }
 

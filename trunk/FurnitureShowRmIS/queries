@@ -7,8 +7,8 @@ amount double,
 date date
 );
 
-create table sales(id int not null auto_increment,
-primary key(id),
+create table sales(sale_id int not null auto_increment,
+primary key(sale_id),
 itemname varchar(20),
 description1 varchar(60),
 description2 varchar(60),
@@ -17,6 +17,7 @@ date date,
 purchaseprice double,
 manufacturer varchar(20),
 quantity int(10),
+totalpurchaseprice double,
 totalprice double
 );
 

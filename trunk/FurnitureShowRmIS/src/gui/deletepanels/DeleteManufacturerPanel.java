@@ -5,10 +5,12 @@ import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 
+import model.Manufacturer;
 import utils.Helper;
 import database.ManufacturerHandler;
 import database.caller.DeleteManufacturerCaller;
 
+@SuppressWarnings("serial")
 public class DeleteManufacturerPanel extends AbstractDeletePanel {
     public DeleteManufacturerPanel() {
 	super();
@@ -42,7 +44,15 @@ public class DeleteManufacturerPanel extends AbstractDeletePanel {
 
     @Override
     public void itemStateChanged(ItemEvent arg0) {
-	// TODO Auto-generated method stub
-	
+	try {
+	    int id = getManufacturerId();
+	    ManufacturerHandler handler = new ManufacturerHandler();
+	    Manufacturer m = handler.searchManufacturer(id);
+	    setNameText(m.getmName());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    setNameText(null);
+	}
+
     }
 }
