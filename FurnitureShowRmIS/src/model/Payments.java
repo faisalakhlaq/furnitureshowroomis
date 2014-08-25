@@ -42,8 +42,10 @@ public class Payments implements ModelClass {
     public double getBalance() {
         return balance;
     }
+
     public void setBalance(double d) {
         this.balance = d;
+
     }
     public Date getDate() {
         return (Date) date;
