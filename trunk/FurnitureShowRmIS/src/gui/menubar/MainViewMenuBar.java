@@ -14,6 +14,7 @@ import gui.panels.callers.SalesPanelCaller;
 import gui.searchpanels.callers.SearchExpensesPanelCaller;
 import gui.searchpanels.callers.SearchManufacturerPanelCaller;
 import gui.searchpanels.callers.SearchProductPanelCaller;
+import gui.searchpanels.callers.SearchSalePanelCaller;
 
 import java.awt.event.KeyEvent;
 
@@ -68,10 +69,6 @@ public class MainViewMenuBar extends ISMenuBar {
 	category.add(deleteCategory);
 	deleteCategory.addActionListener(new DeleteCategoryPanelCaller());
 
-	JMenuItem updateCategory = new JMenuItem("Update Category");
-	category.add(updateCategory);
-	updateCategory.addActionListener(new CategoryPanelCaller());
-
 	JMenuItem searchCategory = new JMenuItem("Search Category");
 	category.add(searchCategory);
 	searchCategory.addActionListener(new SearchProductPanelCaller());
@@ -94,10 +91,6 @@ public class MainViewMenuBar extends ISMenuBar {
 	JMenuItem deleteProduct = new JMenuItem("Delete Product");
 	product.add(deleteProduct);
 	deleteProduct.addActionListener(new DeleteProductPanelCaller());
-
-	JMenuItem updateProduct = new JMenuItem("Update Product");
-	product.add(updateProduct);
-	updateProduct.addActionListener(new ProductPanelCaller());
 
 	JMenuItem searchProduct = new JMenuItem("Search Product");
 	product.add(searchProduct);
@@ -122,10 +115,6 @@ public class MainViewMenuBar extends ISMenuBar {
 	deleteManfacturer
 		.addActionListener(new DeleteManufacturerPanelCaller());
 
-	JMenuItem updateManfacturer = new JMenuItem("Update Manfacturer");
-	manufacturer.add(updateManfacturer);
-	updateManfacturer.addActionListener(new ManufacturerPanelCaller());
-
 	JMenuItem searchManfacturer = new JMenuItem("Search Manfacturer");
 	manufacturer.add(searchManfacturer);
 	searchManfacturer
@@ -144,10 +133,6 @@ public class MainViewMenuBar extends ISMenuBar {
 	JMenuItem editExpenses = new JMenuItem("Edit Expenses");
 	expenses.add(editExpenses);
 	editExpenses.addActionListener(new ExpensesPanelCaller());
-
-	JMenuItem updateExpenses = new JMenuItem("Update Expenses");
-	expenses.add(updateExpenses);
-	updateExpenses.addActionListener(new ExpensesPanelCaller());
 
 	JMenuItem deleteExpenses = new JMenuItem("Delete Expenses");
 	expenses.add(deleteExpenses);
@@ -172,13 +157,13 @@ public class MainViewMenuBar extends ISMenuBar {
 	sale.add(editSale);
 	editSale.addActionListener(new SalesPanelCaller());
 
-	JMenuItem updateSale = new JMenuItem("Update Sale");
-	sale.add(updateSale);
-	updateSale.addActionListener(new SalesPanelCaller());
-
 	JMenuItem deleteSale = new JMenuItem("Delete Sale");
 	sale.add(deleteSale);
 	deleteSale.addActionListener(new DeleteSalePanelCaller());
+	
+	JMenuItem searchSale = new JMenuItem("Search Sale");
+	sale.add(searchSale);
+	searchSale.addActionListener(new SearchSalePanelCaller());
     }
 
     private void addHelpMenu() {

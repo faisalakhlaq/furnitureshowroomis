@@ -16,43 +16,37 @@ import java.util.Calendar;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import model.Expenses;
 
 import org.jdesktop.swingx.JXDatePicker;
 
-import utils.Helper;
 import database.ExpensesHandler;
+import database.caller.UpdateExpensesCaller;
 
 @SuppressWarnings("serial")
 public class ExpensesPanel extends AbstractPanel {
-
+    private JButton editBtn = null;
+    private JButton cancelBtn = null;
     private JButton saveBtn = null;
-
-    private JButton deleteBtn = null;
-
     private JButton exitBtn = null;
+    private JButton clearBtn = null;
 
     private JLabel titleLbl = null;
-
     private JLabel amountLbl = null;
-
     private JLabel discriptionLbl = null;
-
     private JLabel dateLbl = null;
 
     private JTextField titleTxt = null;
-
     private JTextField amountTxt = null;
-
     private JTextField idTxt = null;
-
     private JTextField discriptionTxt = null;
-
     private JXDatePicker datePicker = null;
 
     private JLabel resultMsgLbl;
+    private boolean editMode = false;
 
     private Expenses expence = null;
 
@@ -84,59 +78,39 @@ public class ExpensesPanel extends AbstractPanel {
 
 	datePicker.setDate(expence.getDate());
     }
-    
+
     private void enableTextFields(boolean enable) {
 	idTxt.setEnabled(false);
 	titleTxt.setEnabled(enable);
 	amountTxt.setEnabled(enable);
 	discriptionTxt.setEnabled(enable);
-   	datePicker.setEnabled(enable);
-       }
+	datePicker.setEnabled(enable);
+    }
 
     public GuiPanel getButtonPanel() {
 	GuiPanel buttonPanel = new GuiPanel();
 
+	editBtn = new JButton("Edit");
+	editBtn.addActionListener(new EditExpensesListener());
+	cancelBtn = new JButton("Cancel");
+	cancelBtn.addActionListener(new CancelEditListener());
 	saveBtn = new JButton("Save");
-	saveBtn.addActionListener(new ActionListener() {
+	saveBtn.addActionListener(new SaveExpensesActionListener());
+	clearBtn = new JButton("Clear");
+	clearBtn.addActionListener(new ActionListener() {
+
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		try {
-		    Expenses e = new Expenses();
-
-		    String title = titleTxt.getText();
-		    if (Helper.isEmpty(title)) {
-			throw new Exception("Please provide Expenses name");
-		    }
-		    e.setTitle(title);
-		    String description = discriptionTxt.getText();
-		    e.setDescription(description);
-		    String amount = amountTxt.getText();
-		    if (!Helper.isEmpty(amount) && Helper.isDigit(amount)) {
-			e.setAmount(Integer.valueOf(amount));
-		    } else if (!Helper.isEmpty(amount)
-			    && !Helper.isDigit(amount)) {
-			throw new Exception("Expenses amount id can be digits");
-		    }
-
-		    ExpensesHandler expensehandler = new ExpensesHandler();
-		    expensehandler.saveExpenses(e);
-		    clearTextFields();
-		    displayMessage(true);
-		} catch (Exception e) {
-		    new MessageDialog("Error", e.getMessage());
-
-		}
+		clearTextFields();
 	    }
 	});
-	
-
-	deleteBtn = new JButton("Delete");
-
 	exitBtn = new JButton("Exit");
 	exitBtn.addActionListener(new ClosePanelCaller());
 
+	buttonPanel.add(cancelBtn);
+	buttonPanel.add(editBtn);
 	buttonPanel.add(saveBtn);
-	buttonPanel.add(deleteBtn);
+	buttonPanel.add(clearBtn);
 	buttonPanel.add(exitBtn);
 
 	return buttonPanel;
@@ -253,7 +227,117 @@ public class ExpensesPanel extends AbstractPanel {
 	c.gridwidth = 1;
     }
 
+    private class SaveExpensesActionListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    try {
+		Expenses e = new Expenses();
+
+		// String title = titleTxt.getText();
+		// if (Helper.isEmpty(title)) {
+		// throw new Exception("Please provide Expenses name");
+		// }
+		// e.setTitle(title);
+		// String description = discriptionTxt.getText();
+		// e.setDescription(description);
+		// String amount = amountTxt.getText();
+		// if (!Helper.isEmpty(amount) && Helper.isDigit(amount)) {
+		// e.setAmount(Integer.valueOf(amount));
+		// } else if (!Helper.isEmpty(amount)
+		// && !Helper.isDigit(amount)) {
+		// throw new Exception("Expenses amount id can be digits");
+		// }
+		e = getTextFieldValues();
+		ExpensesHandler expensehandler = new ExpensesHandler();
+		expensehandler.saveExpenses(e);
+		clearTextFields();
+		displayMessage(true);
+	    } catch (Exception e) {
+		new MessageDialog("Error", e.getMessage());
+
+	    }
+	}
+    }
+
     public int getExpesesId() {
 	return Integer.valueOf(idTxt.getText());
+    }
+
+    private Expenses getTextFieldValues() {
+    Expenses e = new Expenses();
+	try {
+	    e.setId(Integer.valueOf(idTxt.getText()));
+	    e.setTitle(titleTxt.getText());
+	    e.setDescription(discriptionTxt.getText());
+	    e.setAmount(Integer.valueOf(amountTxt.getText()));
+	   
+	    e.setDate(datePicker.getDate());
+	} catch (Exception i) {
+	    // TODO
+	    i.printStackTrace();
+	}
+	    return e;
+	
+	
+	}
+
+    private void setEditMode(boolean b) {
+	this.editMode = b;
+	enableTextFields(b);
+	if (editMode) {
+	    editBtn.setText("Update");
+	} else {
+	    editBtn.setText("Edit");
+	}
+    }
+
+    private void showCancelBtn() {
+	cancelBtn.setVisible(editMode);
+    }
+
+    private boolean isInEditMode() {
+	return editMode;
+    }
+
+    private class CancelEditListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    setEditMode(false);
+	    showCancelBtn();
+	}
+
+    }
+
+    private class EditExpensesListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    if (isInEditMode()) {
+		Expenses c = getTextFieldValues();
+
+		if (!expence.equals(c)) {
+		    try {
+			UpdateExpensesCaller.perform(c);
+			expence = c;
+			new MessageDialog("Update Successful",
+				"Customer was updated successfully",
+				JOptionPane.INFORMATION_MESSAGE);
+		    } catch (Exception e) {
+			new MessageDialog("Error", e.getMessage());
+		    }
+		} else {
+		    new MessageDialog("Result", "No values were changed",
+			    JOptionPane.INFORMATION_MESSAGE);
+		}
+		setEditMode(false); // once the sale is edited the panel
+		// will go back to un-editable mode
+		showCancelBtn(); // hide the cancel button
+	    } else {
+		setEditMode(true);
+		showCancelBtn();
+	    }
+	}
     }
 }

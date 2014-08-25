@@ -1,4 +1,4 @@
- package database;
+package database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -90,7 +90,6 @@ public class ProductHandler {
 		product = new Product();
 		product.setProductId(rs.getInt("PRODUCT_ID"));
 		product.setProductName(rs.getString("P_NAME"));
-		
 
 	    }
 	} catch (Exception e1) {
@@ -357,5 +356,63 @@ public class ProductHandler {
 	    }
 	}
 	return names;
+    }
+
+    public void updateProduct(Product b) throws Exception {
+	db = DbConnection.getInstance();
+	Connection conn = db.getConnection();
+	PreparedStatement stmt = null;
+	Statement st = null;
+
+	if (conn == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    // PRODUCT_ID INT NOT NULL AUTO_INCREMENT,
+	    // PRIMARY KEY(PRODUCT_ID),
+	    // P_NAME VARCHAR(20),
+	    // DESCRIPTION1 VARCHAR(60),
+	    // DESCRIPTION2 VARCHAR(60),
+	    // MANUFACTURER_NAME VARCHAR(20),
+	    // CETAGORY_NAME VARCHAR(20),
+	    // WARRANTY INT(2)
+
+	    st = conn.createStatement();
+	    String query = "Update PRODUCT set P_NAME = '" + b.getProductName()
+		    + "', DESCRIPTION1 = '" + b.getDescription1()
+		    + "', DESCRIPTION2 = '" + b.getDescription2()
+		    + "', MANUFACTURER_NAME = " + b.getManufacturerName()
+		    + ", CETAGORY_NAME = " + b.getCategoryName()
+		    + ", WARRANTY = " + b.getWarranty()
+		    + "' where PRODUCT_ID = " + b.getProductId() + ";";
+
+	    System.out.println("Query Executed: " + query);
+	    Logger.getGlobal().fine("Query Executed: " + query);
+	    st.execute(query);
+	} catch (SQLException e) {
+	    Logger.getGlobal().severe(
+		    "Error occured while updating - PRODUCT " + e.getMessage());
+	    System.out.println("SQLException: " + e.getMessage());
+	    e.printStackTrace();
+	    throw new Exception("Error! Unable to update - PRODUCT."
+		    + e.getMessage());
+	} finally {
+	    try {
+		if (conn != null) {
+		    conn.close();
+		}
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while updating - PRODUCT"
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new Exception("Error . Unable to update - PRODUCT. "
+			+ e1.getMessage());
+	    }
+	}
     }
 }

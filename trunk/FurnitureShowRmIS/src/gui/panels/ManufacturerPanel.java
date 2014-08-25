@@ -14,60 +14,44 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import model.Manufacturer;
-import utils.Helper;
 import database.ManufacturerHandler;
+import database.caller.UpdateManufacturerCaller;
 
 @SuppressWarnings("serial")
 public class ManufacturerPanel extends AbstractPanel {
-    private JButton updateBtn = null;
-
-    private JButton deleteBtn = null;
-
+    private JButton editBtn = null;
+    private JButton cancelBtn = null;
     private JButton saveBtn = null;
-
     private JButton exitBtn = null;
+    private JButton clearBtn = null;
 
     private JLabel mIdLbl = null;
-
     private JLabel mNameLbl = null;
-
     private JLabel contactPerson1Lbl = null;
-
     private JLabel contactPerson2Lbl = null;
-
     private JLabel tNumberLbl = null;
-
     private JLabel cellnumberLbl = null;
-
     private JLabel addressLbl = null;
-
     private JLabel webLbl = null;
-
     private JLabel accountNumberLbl = null;
 
     private JTextField mIdTxt = null;
-
     private JTextField mNameTxt = null;
-
     private JTextField contactPerson1Txt = null;
-
     private JTextField contactPerson2Txt = null;
-
     private JTextField tNumberTxt = null;
-
     private JTextField cellNumberTxt = null;
-
     private JTextField addressTxt = null;
-
     private JTextField webTxt = null;
-
     private JTextField accountNumberTxt = null;
 
     private JLabel resultMsgLbl;
 
+    private boolean editMode = false;
     private Manufacturer manufacturer = null;
 
     public ManufacturerPanel() {
@@ -105,6 +89,18 @@ public class ManufacturerPanel extends AbstractPanel {
 
 	// private JTextField datetxt = null;
 
+    }
+
+    private void enableTextFields(boolean enable) {
+	mIdTxt.setEnabled(false);
+	mNameTxt.setEnabled(enable);
+	contactPerson1Txt.setEnabled(enable);
+	contactPerson2Txt.setEnabled(enable);
+	tNumberTxt.setEnabled(enable);
+	cellNumberTxt.setEnabled(enable);
+	addressTxt.setEnabled(enable);
+	webTxt.setEnabled(enable);
+	accountNumberTxt.setEnabled(enable);
     }
 
     @Override
@@ -201,71 +197,27 @@ public class ManufacturerPanel extends AbstractPanel {
     public GuiPanel getButtonPanel() {
 	GuiPanel buttonPanel = new GuiPanel();
 
-	updateBtn = new JButton("Update");
-	updateBtn.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-
-	    }
-	});
-	deleteBtn = new JButton("Delete");
-	deleteBtn.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-
-	    }
-	});
-
+	editBtn = new JButton("Edit");
+	editBtn.addActionListener(new EditManfacturerListener());
+	cancelBtn = new JButton("Cancel");
+	cancelBtn.addActionListener(new CancelEditListener());
 	saveBtn = new JButton("Save");
-	saveBtn.addActionListener(new ActionListener() {
+	saveBtn.addActionListener(new SaveManufacturerActionListener());
+	clearBtn = new JButton("Clear");
+	clearBtn.addActionListener(new ActionListener() {
+
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		try {
-		    Manufacturer m = new Manufacturer();
-
-		    String contactPerson1 = contactPerson1Txt.getText();
-		    m.setContactPerson1(contactPerson1);
-		    String contactPerson2 = contactPerson2Txt.getText();
-		    m.setContactPerson2(contactPerson2);
-		    String tNumber = tNumberTxt.getText();
-		    if (!Helper.isEmpty(tNumber) && Helper.isDigit(tNumber)) {
-			m.settNumber(Integer.valueOf(tNumber));
-		    } else if (!Helper.isEmpty(tNumber)
-			    && !Helper.isDigit(tNumber)) {
-			throw new Exception(
-				"Manufacturer Telephone number can only be digits");
-		    }
-		    String cellNumber = cellNumberTxt.getText();
-		    if (!Helper.isEmpty(cellNumber)
-			    && Helper.isDigit(cellNumber)) {
-			m.setCellNumber(Integer.valueOf(cellNumber));
-		    } else if (!Helper.isEmpty(cellNumber)
-			    && !Helper.isDigit(cellNumber)) {
-			throw new Exception(
-				"Manufacturer Telephone number can only be digits");
-		    }
-		    String address = addressTxt.getText();
-		    m.setAddress(address);
-		    String web = webTxt.getText();
-		    m.setWeb(web);
-		    String accountNumber = accountNumberTxt.getText();
-		    m.setAccountNumber(accountNumber);
-		    ManufacturerHandler manufacturerhandler = new ManufacturerHandler();
-		    manufacturerhandler.saveManufacturer(m);
-		    clearTextFields();
-		    displayMessage(true);
-		} catch (Exception e) {
-		    new MessageDialog("Error", e.getMessage());
-		}
+		clearTextFields();
 	    }
 	});
 	exitBtn = new JButton("Exit");
 	exitBtn.addActionListener(new ClosePanelCaller());
-	buttonPanel.add(updateBtn);
-	buttonPanel.add(deleteBtn);
+
+	buttonPanel.add(cancelBtn);
+	buttonPanel.add(editBtn);
 	buttonPanel.add(saveBtn);
+	buttonPanel.add(clearBtn);
 	buttonPanel.add(exitBtn);
 
 	return buttonPanel;
@@ -326,28 +278,150 @@ public class ManufacturerPanel extends AbstractPanel {
 	c.gridwidth = 1;
     }
 
+    private class SaveManufacturerActionListener implements ActionListener {
+
+	public void actionPerformed(ActionEvent arg0) {
+	    try {
+		Manufacturer m = new Manufacturer();
+
+		// String contactPerson1 = contactPerson1Txt.getText();
+		// m.setContactPerson1(contactPerson1);
+		// String contactPerson2 = contactPerson2Txt.getText();
+		// m.setContactPerson2(contactPerson2);
+		// String tNumber = tNumberTxt.getText();
+		// if (!Helper.isEmpty(tNumber) && Helper.isDigit(tNumber)) {
+		// m.settNumber(Integer.valueOf(tNumber));
+		// } else if (!Helper.isEmpty(tNumber)
+		// && !Helper.isDigit(tNumber)) {
+		// throw new Exception(
+		// "Manufacturer Telephone number can only be digits");
+		// }
+		// String cellNumber = cellNumberTxt.getText();
+		// if (!Helper.isEmpty(cellNumber)
+		// && Helper.isDigit(cellNumber)) {
+		// m.setCellNumber(Integer.valueOf(cellNumber));
+		// } else if (!Helper.isEmpty(cellNumber)
+		// && !Helper.isDigit(cellNumber)) {
+		// throw new Exception(
+		// "Manufacturer Telephone number can only be digits");
+		// }
+		// String address = addressTxt.getText();
+		// m.setAddress(address);
+		// String web = webTxt.getText();
+		// m.setWeb(web);
+		// String accountNumber = accountNumberTxt.getText();
+		// m.setAccountNumber(accountNumber);
+		m = getTextFieldValues();
+		ManufacturerHandler manufacturerhandler = new ManufacturerHandler();
+		manufacturerhandler.saveManufacturer(m);
+		clearTextFields();
+		displayMessage(true);
+	    } catch (Exception e) {
+		new MessageDialog("Error", e.getMessage());
+	    }
+	}
+    }
+
     public int getManufacturerId() {
 	return Integer.valueOf(mIdTxt.getText());
     }
-}
 
-// private void populateManufacturerNamesCbx() {
-// if (mNameCbx == null) {
-// mNameCbx = new JComboBox<String>();
-// }
-// ManufacturerHandler handler = new ManufacturerHandler();
-// Vector<String> names = null;
-// try {
-// names = handler.getManufacturerNames();
-// } catch (Exception e) {
-// new MessageDialog("Error", e.getMessage());
-// }
-// if (names == null) {
-// mNameCbx.setModel(new javax.swing.DefaultComboBoxModel<String>());
-// } else {
-// mNameCbx.setModel(new javax.swing.DefaultComboBoxModel<String>(
-// names));
-// }
-// }
-//
-// }
+    // private void populateManufacturerNamesCbx() {
+    // if (mNameCbx == null) {
+    // mNameCbx = new JComboBox<String>();
+    // }
+    // ManufacturerHandler handler = new ManufacturerHandler();
+    // Vector<String> names = null;
+    // try {
+    // names = handler.getManufacturerNames();
+    // } catch (Exception e) {
+    // new MessageDialog("Error", e.getMessage());
+    // }
+    // if (names == null) {
+    // mNameCbx.setModel(new javax.swing.DefaultComboBoxModel<String>());
+    // } else {
+    // mNameCbx.setModel(new javax.swing.DefaultComboBoxModel<String>(
+    // names));
+    // }
+    // }
+    //
+    // }
+    private Manufacturer getTextFieldValues() {
+	Manufacturer m = new Manufacturer();
+	try {
+	    m.setmId(Integer.valueOf(mIdTxt.getText()));
+	    m.setmName(mNameTxt.getText());
+	    m.setContactPerson1(contactPerson1Txt.getText());
+	    m.setContactPerson2(contactPerson2Txt.getText());
+	    m.settNumber(Integer.valueOf(tNumberTxt.getText()));
+	    m.setCellNumber(Integer.valueOf(cellNumberTxt.getText()));
+	    m.setAddress(addressTxt.getText());
+	    m.setWeb(webTxt.getText());
+	    m.setAccountNumber(accountNumberTxt.getText());
+
+	} catch (Exception e) {
+	    // TODO
+	    e.printStackTrace();
+	}
+	return m;
+    }
+
+    private void setEditMode(boolean b) {
+	this.editMode = b;
+	enableTextFields(b);
+	if (editMode) {
+	    editBtn.setText("Update");
+	} else {
+	    editBtn.setText("Edit");
+	}
+    }
+
+    private void showCancelBtn() {
+	cancelBtn.setVisible(editMode);
+    }
+
+    private boolean isInEditMode() {
+	return editMode;
+    }
+
+    private class CancelEditListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    setEditMode(false);
+	    showCancelBtn();
+	}
+
+    }
+
+    private class EditManfacturerListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    if (isInEditMode()) {
+		Manufacturer c = getTextFieldValues();
+
+		if (!manufacturer.equals(c)) {
+		    try {
+			UpdateManufacturerCaller.perform(c);
+			manufacturer = c;
+			new MessageDialog("Update Successful",
+				"Customer was updated successfully",
+				JOptionPane.INFORMATION_MESSAGE);
+		    } catch (Exception e) {
+			new MessageDialog("Error", e.getMessage());
+		    }
+		} else {
+		    new MessageDialog("Result", "No values were changed",
+			    JOptionPane.INFORMATION_MESSAGE);
+		}
+		setEditMode(false); // once the sale is edited the panel
+		// will go back to un-editable mode
+		showCancelBtn(); // hide the cancel button
+	    } else {
+		setEditMode(true);
+		showCancelBtn();
+	    }
+	}
+    }
+}

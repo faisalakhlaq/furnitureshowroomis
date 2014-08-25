@@ -16,54 +16,42 @@ import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import model.Product;
-import utils.Helper;
 import database.CategoryHandler;
 import database.ManufacturerHandler;
 import database.ProductHandler;
+import database.caller.UpdateProductCaller;
 
 @SuppressWarnings("serial")
 public class ProductPanel extends AbstractPanel {
 
     private JButton editBtn = null;
-
-    private JButton deleteBtn = null;
-
+    private JButton cancelBtn = null;
     private JButton saveBtn = null;
-
     private JButton exitBtn = null;
+    private JButton clearBtn = null;
 
     private JLabel productIdLbl = null;
-
     private JLabel pNameLbl = null;
-
     private JLabel discription1Lbl = null;
-
     private JLabel discriptionLbl = null;
-
     private JLabel manufacturerNameLbl = null;
-
     private JLabel categoryNameLbl = null;
-
     private JLabel warrantyLbl = null;
 
     private JTextField productIdTxt = null;
-
     private JTextField pNameTxt = null;
-
     private JTextField description1Txt = null;
-
     private JTextField description2Txt = null;
-
     private JComboBox<String> manufacturerNameCbx = null;
-
     private JComboBox<String> categoryNameCbx = null;
-
     private JTextField warrantyTxt = null;
 
     private JLabel resultMsgLbl;
+    private boolean editMode = false;
 
     private Product product = null;
 
@@ -174,64 +162,26 @@ public class ProductPanel extends AbstractPanel {
 	GuiPanel buttonPanel = new GuiPanel();
 
 	editBtn = new JButton("Edit");
-	editBtn.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-
-	    }
-	});
-	deleteBtn = new JButton("Delete");
-	deleteBtn.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-
-	    }
-	});
-
+	editBtn.addActionListener(new EditProductListener());
+	cancelBtn = new JButton("Cancel");
+	cancelBtn.addActionListener(new CancelEditListener());
 	saveBtn = new JButton("Save");
-	saveBtn.addActionListener(new ActionListener() {
+	saveBtn.addActionListener(new SaveProductActionListener());
+	clearBtn = new JButton("Clear");
+	clearBtn.addActionListener(new ActionListener() {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		try {
-		    Product m = new Product();
-
-		    String pName = pNameTxt.getText();
-		    if (Helper.isEmpty(pName)) {
-			throw new Exception("Please provide Product name");
-		    }
-		    m.setProductName(pName);
-		    String description1 = description1Txt.getText();
-		    m.setDescription1(description1);
-		    String description2 = description2Txt.getText();
-		    m.setDescription2(description2);
-
-		    String warrantyId = warrantyTxt.getText();
-		    if (!Helper.isEmpty(warrantyId)
-			    && Helper.isDigit(warrantyId)) {
-			m.setWarranty(Integer.valueOf(warrantyId));
-		    } else if (!Helper.isEmpty(warrantyId)
-			    && !Helper.isDigit(warrantyId)) {
-			throw new Exception(
-				"Product category id can only be digits");
-		    }
-		    ProductHandler producthandler = new ProductHandler();
-		    producthandler.saveProduct(m);
-		    clearTextFields();
-		    displayMessage(true);
-		} catch (Exception e) {
-		    new MessageDialog("Error", e.getMessage());
-
-		}
+		clearTextFields();
 	    }
 	});
 	exitBtn = new JButton("Exit");
 	exitBtn.addActionListener(new ClosePanelCaller());
+
+	buttonPanel.add(cancelBtn);
 	buttonPanel.add(editBtn);
-	buttonPanel.add(deleteBtn);
 	buttonPanel.add(saveBtn);
+	buttonPanel.add(clearBtn);
 	buttonPanel.add(exitBtn);
 
 	return buttonPanel;
@@ -288,6 +238,42 @@ public class ProductPanel extends AbstractPanel {
 	c.gridwidth = 1;
     }
 
+    private class SaveProductActionListener implements ActionListener {
+	public void actionPerformed(ActionEvent arg0) {
+	    try {
+		Product m = new Product();
+
+		// String pName = pNameTxt.getText();
+		// if (Helper.isEmpty(pName)) {
+		// throw new Exception("Please provide Product name");
+		// }
+		// m.setProductName(pName);
+		// String description1 = description1Txt.getText();
+		// m.setDescription1(description1);
+		// String description2 = description2Txt.getText();
+		// m.setDescription2(description2);
+		//
+		// String warrantyId = warrantyTxt.getText();
+		// if (!Helper.isEmpty(warrantyId)
+		// && Helper.isDigit(warrantyId)) {
+		// m.setWarranty(Integer.valueOf(warrantyId));
+		// } else if (!Helper.isEmpty(warrantyId)
+		// && !Helper.isDigit(warrantyId)) {
+		// throw new Exception(
+		// "Product category id can only be digits");
+		// }
+		m = getTextFieldValues();
+		ProductHandler producthandler = new ProductHandler();
+		producthandler.saveProduct(m);
+		clearTextFields();
+		displayMessage(true);
+	    } catch (Exception e) {
+		new MessageDialog("Error", e.getMessage());
+
+	    }
+	}
+    }
+
     public int getproductId() {
 	return Integer.valueOf(productIdTxt.getText());
     }
@@ -331,6 +317,83 @@ public class ProductPanel extends AbstractPanel {
 	    categoryNameCbx
 		    .setModel(new javax.swing.DefaultComboBoxModel<String>(
 			    categoryNames));
+	}
+    }
+
+    private Product getTextFieldValues() {
+	Product m = new Product();
+	try {
+	    m.setProductId(Integer.valueOf(productIdTxt.getText()));
+	    m.setProductName(pNameTxt.getText());
+	    m.setDescription1(description1Txt.getText());
+	    m.setDescription2(description2Txt.getText());
+	    m.setManufacturerName(String.valueOf(manufacturerNameCbx
+		    .getSelectedItem()));
+	    m.setCategoryName(String.valueOf(categoryNameCbx.getSelectedItem()));
+	    m.setWarranty(Integer.valueOf(warrantyTxt.getText()));
+	} catch (Exception e) {
+	    // TODO
+	    e.printStackTrace();
+	}
+	return m;
+    }
+
+    private void setEditMode(boolean b) {
+	this.editMode = b;
+	enableTextFields(b);
+	if (editMode) {
+	    editBtn.setText("Update");
+	} else {
+	    editBtn.setText("Edit");
+	}
+    }
+
+    private void showCancelBtn() {
+	cancelBtn.setVisible(editMode);
+    }
+
+    private boolean isInEditMode() {
+	return editMode;
+    }
+
+    private class CancelEditListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    setEditMode(false);
+	    showCancelBtn();
+	}
+
+    }
+
+    private class EditProductListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    if (isInEditMode()) {
+		Product c = getTextFieldValues();
+
+		if (!product.equals(c)) {
+		    try {
+			UpdateProductCaller.perform(c);
+			product = c;
+			new MessageDialog("Update Successful",
+				"Customer was updated successfully",
+				JOptionPane.INFORMATION_MESSAGE);
+		    } catch (Exception e) {
+			new MessageDialog("Error", e.getMessage());
+		    }
+		} else {
+		    new MessageDialog("Result", "No values were changed",
+			    JOptionPane.INFORMATION_MESSAGE);
+		}
+		setEditMode(false); // once the sale is edited the panel
+		// will go back to un-editable mode
+		showCancelBtn(); // hide the cancel button
+	    } else {
+		setEditMode(true);
+		showCancelBtn();
+	    }
 	}
     }
 }

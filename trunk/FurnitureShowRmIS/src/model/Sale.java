@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class Sale implements ModelClass {
     private int saleId;
-    private String item = null;
+    private String name = null;
     private String description1 = null;
     private String description2 = null;
     private double salePrice;
@@ -27,12 +27,12 @@ public class Sale implements ModelClass {
 	this.saleId = saleId;
     }
 
-    public String getItem() {
-	return item;
+    public String getName() {
+	return name;
     }
 
-    public void setItem(String item) {
-	this.item = item;
+    public void setName(String item) {
+	this.name = item;
     }
 
     public String getDescription1() {
@@ -75,11 +75,11 @@ public class Sale implements ModelClass {
 	this.purchasePrice = purchaseprice;
     }
 
-    public String getManufacturer() {
+    public String getManufacturerName() {
 	return manufacturerName;
     }
 
-    public void setManufacturer(String manufacturer) {
+    public void setManufacturerName(String manufacturer) {
 	this.manufacturerName = manufacturer;
     }
 
@@ -95,7 +95,7 @@ public class Sale implements ModelClass {
 	return totalPrice;
     }
 
-    public void setTotalprice(double totalprice) {
+    public void setTotalPrice(double totalprice) {
 	this.totalPrice = totalprice;
     }
 
@@ -107,4 +107,28 @@ public class Sale implements ModelClass {
 	this.totalPurchasePrice = totalPurchasePrice;
     }
 
+    // @Override
+    // public boolean equals(Object obj) {
+    // boolean equal = false;
+    // if (!(obj instanceof Sale))
+    // return equal;
+    //
+    // Sale c = (Sale) obj;
+    //
+    // // if(this.hashCode() == c.hashCode()) // TODO check if hashcode needs
+    // // to be checked here
+    // if (this.saleId == c.getSaleId() && this.date.equals(c.getDate())
+    // && this.name.equals(c.getName())
+    // && this.description1.equals(c.getDescription1())
+    // && this.description2 == c.getDescription2()
+    // && this.salePrice == (c.getSalePrice())
+    // && this.purchasePrice == c.getPurchasePrice()
+    // && this.manufacturerName.equals(c.getManufacturerName())
+    // && this.quantity == c.getQuantity()
+    // && this.totalPrice == c.getTotalprice()
+    // && this.totalPurchasePrice == c.getTotalPurchasePrice()) {
+    // equal = true;
+    // }
+    // return equal;
+    // }
 }

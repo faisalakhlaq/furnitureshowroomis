@@ -306,4 +306,54 @@ public class CategoryHandler {
 	}
 	return names;
     }
+
+    public void updateCategory(Category b) throws Exception {
+	db = DbConnection.getInstance();
+	Connection conn = db.getConnection();
+	PreparedStatement stmt = null;
+	Statement st = null;
+
+	if (conn == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    // CREATE TABLE CATEGORY (
+	    // CATEGORY_ID INT NOT NULL AUTO_INCREMENT,
+	    // PRIMARY KEY(CATEGORY_ID),
+	    // CATEGORY_NAME VARCHAR(20)
+	    st = conn.createStatement();
+	    String query = "Update CATEGORY set CATEGORY_NAME = '"
+		    + b.getCategoryName() + "' where CATEGORY_ID = "
+		    + b.getCategoryId() + ";";
+
+	    System.out.println("Query Executed: " + query);
+	    Logger.getGlobal().fine("Query Executed: " + query);
+	    st.execute(query);
+	} catch (SQLException e) {
+	    Logger.getGlobal().severe(
+		    "Error occured while updating - manufacturer "
+			    + e.getMessage());
+	    System.out.println("SQLException: " + e.getMessage());
+	    e.printStackTrace();
+	    throw new Exception("Error! Unable to update - manuacturer."
+		    + e.getMessage());
+	} finally {
+	    try {
+		if (conn != null) {
+		    conn.close();
+		}
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while updating - manufacturer"
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new Exception("Error . Unable to update - manufacturer. "
+			+ e1.getMessage());
+	    }
+	}
+    }
 }
