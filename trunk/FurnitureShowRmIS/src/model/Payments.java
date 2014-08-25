@@ -1,6 +1,8 @@
 package model;
 
-import java.util.Date;
+import java.sql.Date;
+
+
 
 public class Payments implements ModelClass {
     
@@ -8,12 +10,12 @@ public class Payments implements ModelClass {
     private String description = null;
     private String manufacturerName = null;
     private int paymentAmount;
-    private int balance;
-    private Date date = null;
+    private double balance;
+    private java.util.Date date = null;
     public Payments() {
 
     }
-    public int getTotalBill() {
+    public double getTotalBill() {
         return totalBill;
     }
     public void setTotalBill(int totalBill) {
@@ -37,17 +39,17 @@ public class Payments implements ModelClass {
     public void setPaymentAmount(int paymentAmount) {
         this.paymentAmount = paymentAmount;
     }
-    public int getBalance() {
+    public double getBalance() {
         return balance;
     }
-    public void setBalance(int balance) {
-        this.balance = balance;
+    public void setBalance(double d) {
+        this.balance = d;
     }
     public Date getDate() {
-        return date;
+        return (Date) date;
     }
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate(java.util.Date date2) {
+        this.date = date2;
     }
 
    
