@@ -9,6 +9,7 @@ import gui.panels.callers.CategoryPanelCaller;
 import gui.panels.callers.ExpensesPanelCaller;
 import gui.panels.callers.MakePaymentsPanelCaller;
 import gui.panels.callers.ManufacturerPanelCaller;
+import gui.panels.callers.OrderPanelCaller;
 import gui.panels.callers.ProductPanelCaller;
 import gui.panels.callers.SalesPanelCaller;
 import gui.searchpanels.callers.SearchExpensesPanelCaller;
@@ -16,6 +17,8 @@ import gui.searchpanels.callers.SearchManufacturerPanelCaller;
 import gui.searchpanels.callers.SearchProductPanelCaller;
 import gui.searchpanels.callers.SearchSalePanelCaller;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JMenu;
@@ -48,6 +51,11 @@ public class MainViewMenuBar extends ISMenuBar {
 	JMenuItem makePayments = new JMenuItem("Make Payment");
 	payments.add(makePayments);
 	makePayments.addActionListener(new MakePaymentsPanelCaller());
+	
+
+	JMenuItem order = new JMenuItem("Order");
+	payments.add(order);
+	order.addActionListener(new OrderPanelCaller());
 
 	
     }
@@ -169,14 +177,17 @@ public class MainViewMenuBar extends ISMenuBar {
     private void addHelpMenu() {
 	JMenu transaction = new JMenu("Help");
 	this.add(transaction);
+	
     }
 
     public void addFileMenu() {
 	JMenu file = new JMenu("File");
 	this.add(file);
+	
+
     }
 
-    public static MainViewMenuBar getInstane() {
+ public static MainViewMenuBar getInstane() {
 	if (instance == null)
 	    instance = new MainViewMenuBar();
 
