@@ -9,6 +9,8 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Vector;
@@ -22,7 +24,9 @@ import model.Payments;
 
 import org.jdesktop.swingx.JXDatePicker;
 
+import utils.Helper;
 import database.ManufacturerHandler;
+import database.PaymentsHandler;
 
 @SuppressWarnings("serial")
 public class PaymentsPanel extends AbstractPanel {
@@ -30,7 +34,7 @@ public class PaymentsPanel extends AbstractPanel {
 
     private JButton exitbtn = null;
 
-    private JButton calculatebtn = null;
+    private JButton calculatebtn = new JButton("Calculate");
 
     private JLabel manufacturerNamelbl = null;
 
@@ -60,6 +64,8 @@ public class PaymentsPanel extends AbstractPanel {
 
     private Payments payment = null;
 
+    private JLabel resultMsgLbl = null;
+
     public PaymentsPanel() {
 	addPanels();
 	populateManufacturerNameCbx();
@@ -75,6 +81,8 @@ public class PaymentsPanel extends AbstractPanel {
     private void fillTextFields() {
 	if (payment == null)
 	    return;
+
+	manufacturerNameCbx.getSelectedItem().toString();
 
 	paymentAmounttxt.setText(String.valueOf(payment.getPaymentAmount()));
 
@@ -111,7 +119,6 @@ public class PaymentsPanel extends AbstractPanel {
 
 	datePicker.setDate(Calendar.getInstance().getTime());
 	datePicker.setFormats(new SimpleDateFormat("yyyy.MM.dd"));
-	calculatebtn = new JButton("Calculate");
 
 	centerPanel.setLayout(new GridBagLayout());
 	GridBagConstraints c = new GridBagConstraints();
@@ -163,7 +170,7 @@ public class PaymentsPanel extends AbstractPanel {
 	c.fill = GridBagConstraints.HORIZONTAL;
 	c.anchor = placement;
 	c.insets = new Insets(paddingTop, paddingLeft, 0, 0); // top and left
-							      // padding
+	// padding
 	c.weightx = 0.75;
 	c.weighty = 0;
 	c.gridx = gridx;
@@ -177,10 +184,27 @@ public class PaymentsPanel extends AbstractPanel {
 	GuiPanel buttonPanel = new GuiPanel();
 
 	savebtn = new JButton("Save");
+	savebtn.addActionListener(new SavePaymentsActionListener());
 	exitbtn = new JButton("Exit");
 	exitbtn.addActionListener(new ClosePanelCaller());
 
+	calculatebtn.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		try {
+		    calculateBalance();
+
+		} catch (Exception e) {
+		    new MessageDialog("Error", e.getMessage());
+		    e.printStackTrace();
+		}
+	    }
+	});
+
 	buttonPanel.add(savebtn);
+
+	savebtn = new JButton("Save");
 
 	buttonPanel.add(exitbtn);
 
@@ -192,6 +216,26 @@ public class PaymentsPanel extends AbstractPanel {
 	GuiPanel bannerPanel = new GuiPanel();
 	bannerPanel.add(new JLabel("Make Payments"), BorderLayout.CENTER);
 	return bannerPanel;
+    }
+
+    private void displayMessage(final boolean success) {
+	Thread t = new Thread() {
+	    public void run() {
+		try {
+		    if (success) {
+			resultMsgLbl.setText("Payments saved");
+		    } else {
+			resultMsgLbl
+				.setText("Sorry! Transaction unsuccessfull");
+		    }
+		    Thread.sleep(2000);
+		    resultMsgLbl.setText(null);
+		} catch (InterruptedException e) {
+		    e.printStackTrace();
+		}
+	    }
+	};
+	t.start();
     }
 
     private void clearTextFields() {
@@ -220,6 +264,79 @@ public class PaymentsPanel extends AbstractPanel {
 	    manufacturerNameCbx
 		    .setModel(new javax.swing.DefaultComboBoxModel<String>(
 			    names));
+	}
+    }
+
+    private double calculateBalance() throws Exception {
+	double balance = 0;
+	String totalBill = totalBillTxt.getText();
+	String paymentAmount = paymentAmounttxt.getText();
+
+	if (!Helper.isEmpty(paymentAmount) && !Helper.isDigit(paymentAmount)) {
+	    throw new Exception("Quantity can only be digits");
+	}
+
+	if (!Helper.isEmpty(totalBill) && !Helper.isDigit(totalBill)) {
+	    throw new Exception("Sale price can only be digits");
+	}
+	int q = paymentAmount.isEmpty() ? 1 : Integer.valueOf(paymentAmount);
+	int p = totalBill.isEmpty() ? 0 : Integer.valueOf(totalBill);
+
+	balance = p - q;
+	balancetxt.setText(String.valueOf(balance));
+
+	return balance;
+    }
+
+    private class SavePaymentsActionListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    try {
+		Payments p = new Payments();
+
+		String mName = manufacturerNameCbx.getSelectedItem().toString();
+		p.setManufacturerName(mName);
+		String paymentAmount = paymentAmounttxt.getText();
+		if (!Helper.isEmpty(paymentAmount)
+			&& Helper.isDigit(paymentAmount)) {
+		    p.setPaymentAmount(Integer.valueOf(paymentAmount));
+		} else if (!Helper.isEmpty(paymentAmount)
+			&& !Helper.isDigit(paymentAmount)) {
+		    throw new Exception(
+			    "Payment Amount Price can only be digits");
+		}
+		String description = descripitiontxt.getText();
+		p.setDescription(description);
+		String totalBill = totalBillTxt.getText();
+		if (!Helper.isEmpty(totalBill) && Helper.isDigit(totalBill)) {
+		    p.setTotalBill(Integer.valueOf(totalBill));
+		} else if (!Helper.isEmpty(totalBill)
+			&& !Helper.isDigit(totalBill)) {
+		    throw new Exception("Total Bill can only be digits");
+		}
+		// String balance = balancetxt.getText();
+		// if (!Helper.isEmpty(balance)
+		// && Helper.isDigit(balance)) {
+		// p.setBalance(Integer.valueOf(balance));
+		// } else if (!Helper.isEmpty(balance)
+		// && !Helper.isDigit(balance)) {
+		// throw new Exception("Balance can only be digits");
+		// }
+
+		java.util.Date date = datePicker.getDate();
+
+		p.setBalance(calculateBalance());
+		p.setDate(datePicker.getDate());
+
+		PaymentsHandler paymentsHandler = new PaymentsHandler();
+		paymentsHandler.savePayments(p);
+		clearTextFields();
+		displayMessage(true);
+	    } catch (Exception e) {
+		new MessageDialog("Error", e.getMessage());
+
+	    }
 	}
     }
 
