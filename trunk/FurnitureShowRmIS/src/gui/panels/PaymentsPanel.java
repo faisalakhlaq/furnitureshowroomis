@@ -25,7 +25,7 @@ import org.jdesktop.swingx.JXDatePicker;
 import database.ManufacturerHandler;
 
 @SuppressWarnings("serial")
-public class MakePaymentsPanel extends AbstractPanel {
+public class PaymentsPanel extends AbstractPanel {
     private JButton savebtn = null;
 
     private JButton exitbtn = null;
@@ -60,12 +60,12 @@ public class MakePaymentsPanel extends AbstractPanel {
 
     private Payments payment = null;
 
-    public MakePaymentsPanel() {
+    public PaymentsPanel() {
 	addPanels();
 	populateManufacturerNameCbx();
     }
 
-    public MakePaymentsPanel(Payments p) {
+    public PaymentsPanel(Payments p) {
 	addPanels();
 	this.payment = p;
 	fillTextFields();

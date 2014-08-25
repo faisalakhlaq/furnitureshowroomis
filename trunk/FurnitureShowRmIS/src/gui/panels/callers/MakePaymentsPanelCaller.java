@@ -1,7 +1,7 @@
 package gui.panels.callers;
 
 import gui.panels.DesktopTabbedPane;
-import gui.panels.MakePaymentsPanel;
+import gui.panels.PaymentsPanel;
 
 import java.awt.event.ActionEvent;
 
@@ -24,11 +24,11 @@ public class MakePaymentsPanelCaller extends ISCaller {
 
  
     public void perform() {
-	MakePaymentsPanel makePanel = null;
+	PaymentsPanel makePanel = null;
 	if (payment != null) {
-	    makePanel = new MakePaymentsPanel(payment);
+	    makePanel = new PaymentsPanel(payment);
 	} else {
-	    makePanel = new MakePaymentsPanel();
+	    makePanel = new PaymentsPanel();
 	}
 
 	DesktopTabbedPane pane = DesktopTabbedPane.getInstance();
