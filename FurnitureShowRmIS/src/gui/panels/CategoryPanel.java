@@ -3,7 +3,7 @@ package gui.panels;
 import gui.AbstractPanel;
 import gui.GuiPanel;
 import gui.dailogue.MessageDialog;
-import gui.deletepanels.callers.DeleteCategoryPanelCaller;
+import gui.panels.callers.ClosePanelCaller;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -14,42 +14,42 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import model.Category;
-import utils.Helper;
 import database.CategoryHandler;
+import database.caller.UpdateCategoryCaller;
 
 @SuppressWarnings("serial")
 public class CategoryPanel extends AbstractPanel {
     private JButton editBtn = null;
-
-    private JButton updateBtn = null;
-
-    private JButton deleteBtn = null;
-
+    private JButton cancelBtn = null;
     private JButton saveBtn = null;
+    private JButton exitBtn = null;
+    private JButton clearBtn = null;
 
     private JLabel categoryIdLbl = null;
-
     private JLabel categoryNameLbl = null;
 
     private JTextField categoryIdTxt = null;
-
     private JTextField categoryNameTxt = null;
 
     private Category category = null;
+    private boolean editMode = false;
 
     private JLabel resultMsgLbl = null;
 
     public CategoryPanel() {
 	addPanels();
+	enableTextFields(true);
     }
 
     public CategoryPanel(Category c) {
 	addPanels();
 	this.category = c;
 	fillTextFields();
+	enableTextFields(false);
     }
 
     private void fillTextFields() {
@@ -58,6 +58,11 @@ public class CategoryPanel extends AbstractPanel {
 	categoryIdTxt.setText(String.valueOf(category.getCategoryId()));
 	categoryNameTxt.setText(category.getCategoryName());
 
+    }
+
+    private void enableTextFields(boolean enable) {
+	categoryIdTxt.setEnabled(false);
+	categoryNameTxt.setEnabled(enable);
     }
 
     @Override
@@ -100,64 +105,27 @@ public class CategoryPanel extends AbstractPanel {
 	GuiPanel buttonPanel = new GuiPanel();
 
 	editBtn = new JButton("Edit");
-	// saveBtn.addActionListener(new ActionListener() {
-	// @Override
-	// public void actionPerformed(ActionEvent arg0) {
-	// String newCategoryID = categoryIdTxt.getText();
-	// String oldName = schemeNamecbx.getSelectedItem().toString();
-	//
-	// SchemeHandler handler = new SchemeHandler();
-	// try {
-	// handler.updateSchemeName(oldName, newName);
-	// clearTextFields();
-	// populateSchemeNamesCbx();
-	// displayMessage(true);
-	// DesktopTabbedPane pane = DesktopTabbedPane.getInstance();
-	// pane.refreshPanels();
-	// } catch (Exception e) {
-	// new MessageDialog("Error", e.getMessage());
-	// }
-	// }
-	// });
-
-	updateBtn = new JButton("Update");
-	updateBtn.addActionListener(new ActionListener() {
-	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-
-	    }
-	});
-	deleteBtn = new JButton("Delete");
-	deleteBtn.addActionListener(new DeleteCategoryPanelCaller());
+	editBtn.addActionListener(new EditCategoryListener());
+	cancelBtn = new JButton("Cancel");
+	cancelBtn.addActionListener(new CancelEditListener());
 	saveBtn = new JButton("Save");
-	saveBtn.addActionListener(new ActionListener() {
+	saveBtn.addActionListener(new SaveCategoryActionListener());
+	clearBtn = new JButton("Clear");
+	clearBtn.addActionListener(new ActionListener() {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		try {
-		    Category c = new Category();
-
-		    // String cId = categoryIdTxt.getText();
-		    String categoryName = categoryNameTxt.getText();
-		    if (Helper.isEmpty(categoryName)) {
-			throw new Exception("Please provide category name");
-		    }
-		    c.setCategoryName(categoryName);
-
-		    CategoryHandler categoryhandler = new CategoryHandler();
-		    categoryhandler.saveCategory(c);
-		    clearTextFields();
-		    displayMessage(true);
-		} catch (Exception e) {
-		    new MessageDialog("Error", e.getMessage());
-		}
+		clearTextFields();
 	    }
 	});
+	exitBtn = new JButton("Exit");
+	exitBtn.addActionListener(new ClosePanelCaller());
 
+	buttonPanel.add(cancelBtn);
 	buttonPanel.add(editBtn);
-	buttonPanel.add(updateBtn);
-	buttonPanel.add(deleteBtn);
 	buttonPanel.add(saveBtn);
+	buttonPanel.add(clearBtn);
+	buttonPanel.add(exitBtn);
 
 	return buttonPanel;
     }
@@ -210,7 +178,101 @@ public class CategoryPanel extends AbstractPanel {
 	c.gridwidth = 1;
     }
 
+    private class SaveCategoryActionListener implements ActionListener {
+	public void actionPerformed(ActionEvent arg0) {
+	    try {
+		Category c = new Category();
+
+		// // String cId = categoryIdTxt.getText();
+		// String categoryName = categoryNameTxt.getText();
+		// if (Helper.isEmpty(categoryName)) {
+		// throw new Exception("Please provide category name");
+		// }
+		// c.setCategoryName(categoryName);
+		c = getTextFieldValues();
+		CategoryHandler categoryhandler = new CategoryHandler();
+		categoryhandler.saveCategory(c);
+		clearTextFields();
+		displayMessage(true);
+	    } catch (Exception e) {
+		new MessageDialog("Error", e.getMessage());
+	    }
+	}
+    }
+
     public int getCategoryId() {
 	return Integer.valueOf(categoryIdTxt.getText());
+    }
+
+    private Category getTextFieldValues() {
+	Category c = new Category();
+	try {
+	    c.setCategoryId(Integer.valueOf(categoryIdTxt.getText()));
+	    c.setCategoryName(categoryNameTxt.getText());
+
+	} catch (Exception e) {
+	    // TODO
+	    e.printStackTrace();
+	}
+	return c;
+    }
+
+    private void setEditMode(boolean b) {
+	this.editMode = b;
+	enableTextFields(b);
+	if (editMode) {
+	    editBtn.setText("Update");
+	} else {
+	    editBtn.setText("Edit");
+	}
+    }
+
+    private void showCancelBtn() {
+	cancelBtn.setVisible(editMode);
+    }
+
+    private boolean isInEditMode() {
+	return editMode;
+    }
+
+    private class CancelEditListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    setEditMode(false);
+	    showCancelBtn();
+	}
+
+    }
+
+    private class EditCategoryListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    if (isInEditMode()) {
+		Category c = getTextFieldValues();
+
+		if (!category.equals(c)) {
+		    try {
+			UpdateCategoryCaller.perform(c);
+			category = c;
+			new MessageDialog("Update Successful",
+				"Customer was updated successfully",
+				JOptionPane.INFORMATION_MESSAGE);
+		    } catch (Exception e) {
+			new MessageDialog("Error", e.getMessage());
+		    }
+		} else {
+		    new MessageDialog("Result", "No values were changed",
+			    JOptionPane.INFORMATION_MESSAGE);
+		}
+		setEditMode(false); // once the sale is edited the panel
+		// will go back to un-editable mode
+		showCancelBtn(); // hide the cancel button
+	    } else {
+		setEditMode(true);
+		showCancelBtn();
+	    }
+	}
     }
 }

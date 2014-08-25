@@ -374,4 +374,62 @@ public class ManufacturerHandler {
 	}
 	return names;
     }
+
+    public void updateManufacturer(Manufacturer b) throws Exception {
+	db = DbConnection.getInstance();
+	Connection conn = db.getConnection();
+	PreparedStatement stmt = null;
+	Statement st = null;
+
+	if (conn == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    /*
+	     * manufacturer_id int NOT NULL AUTO_INCREMENT, primary
+	     * key(manufacturer_id), m_name varchar(20), contact_person1
+	     * varchar(20), contact_person2 varchar(20), t_number int(20),
+	     * cell_number int(15), address varchar(20), web varchar(15),
+	     * account_number varchar(20)
+	     */
+	    st = conn.createStatement();
+	    String query = "Update manufacturer set m_name = '" + b.getmName()
+		    + "', contact_person1 = '" + b.getContactPerson1()
+		    + "', contact_person2 = '" + b.getContactPerson2()
+		    + "', t_number = " + b.gettNumber() + ", cell_number = "
+		    + b.getCellNumber() + ", address = '" + b.getAddress()
+		    + "', web = '" + b.getWeb() + "', account_number = '"
+		    + b.getAccountNumber() + "' where manufacturer_id = "
+		    + b.getmId() + ";";
+
+	    System.out.println("Query Executed: " + query);
+	    Logger.getGlobal().fine("Query Executed: " + query);
+	    st.execute(query);
+	} catch (SQLException e) {
+	    Logger.getGlobal().severe(
+		    "Error occured while updating - manufacturer "
+			    + e.getMessage());
+	    System.out.println("SQLException: " + e.getMessage());
+	    e.printStackTrace();
+	    throw new Exception("Error! Unable to update - manuacturer."
+		    + e.getMessage());
+	} finally {
+	    try {
+		if (conn != null) {
+		    conn.close();
+		}
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while updating - manufacturer"
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new Exception("Error . Unable to update - manufacturer. "
+			+ e1.getMessage());
+	    }
+	}
+    }
 }

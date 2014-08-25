@@ -1,9 +1,13 @@
- package gui.deletepanels;
+package gui.deletepanels;
+
+import gui.dailogue.MessageDialog;
 
 import java.awt.event.ItemEvent;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
+
+import model.Sale;
 
 import utils.Helper;
 import database.SaleHandler;
@@ -15,7 +19,6 @@ public class DeleteSalePanel extends AbstractDeletePanel {
 	super();
 	addButtonListener(new DeleteSaleCaller(this));
     }
-
 
     protected DefaultComboBoxModel<Integer> getComboBoxModel() {
 	DefaultComboBoxModel<Integer> model = null;
@@ -42,7 +45,15 @@ public class DeleteSalePanel extends AbstractDeletePanel {
 
     @Override
     public void itemStateChanged(ItemEvent arg0) {
-
+	try {
+	    int id = getSaleId();
+	    SaleHandler handler = new SaleHandler();
+	    Sale sale = handler.searchSale(id);
+	    setNameText(sale.getName());
+	} catch (Exception e) {
+	    new MessageDialog("Error", e.getMessage());
+	    e.printStackTrace();
+	}
     }
 
 }

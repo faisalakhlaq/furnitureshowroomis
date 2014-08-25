@@ -81,23 +81,30 @@ public class SaleHandler {
 		    "Unable to connect to the database. conection = null!");
 	}
 	try {
-	    String query = "Select * from Sale where Sale_id = ?";
+	    String query = "Select * from Sales where Sale_id = ?";
 	    st = conn.prepareStatement(query);
 	    st.setInt(1, id);
 	    System.out.println("Executed Query: " + query + id);
 	    ResultSet rs = st.executeQuery();
 	    if (rs.next()) {
 		sale = new Sale();
-		sale.setItem(rs.getString("Item"));
+		sale.setSaleId(id);
+		sale.setName(rs.getString("itemname"));
 		sale.setDescription1(rs.getString("Description1"));
 		sale.setDescription2(rs.getString("Description2"));
-		sale.setSalePrice(rs.getInt("Sale Price"));
-		sale.setPurchaseprice(rs.getInt("Purchase price"));
-		sale.setManufacturer(rs.getString("Manufacturer"));
+		sale.setSalePrice(rs.getInt("saleprice"));
+		sale.setPurchaseprice(rs.getInt("purchaseprice"));
+		sale.setManufacturerName(rs.getString("Manufacturer"));
 		sale.setQuantity(rs.getInt("Quantity"));
-		sale.setTotalprice(rs.getInt("Total price"));
+		sale.setTotalPrice(rs.getInt("totalprice"));
+		sale.setTotalPurchasePrice(rs.getInt("totalpurchaseprice"));
 		sale.setDate(rs.getDate("date"));
-
+		/*
+		 * itemname varchar(20), description1 varchar(60), description2
+		 * varchar(60), saleprice double, date date, purchaseprice
+		 * double, manufacturer varchar(20), quantity int(10),
+		 * totalprice double
+		 */
 	    }
 	} catch (Exception e1) {
 	    Logger.getGlobal().severe(
@@ -140,13 +147,13 @@ public class SaleHandler {
 		    .prepareStatement("INSERT INTO sales(itemname, description1, description2, saleprice, date, purchaseprice, manufacturer, quantity, totalpurchaseprice, totalprice ) "
 			    + " VALUES (?,?,?,?,?,?,?,?,?,?)");
 
-	    stmt.setString(1, s.getItem());
+	    stmt.setString(1, s.getName());
 	    stmt.setString(2, s.getDescription1());
 	    stmt.setString(3, s.getDescription2());
 	    stmt.setDouble(4, s.getSalePrice());
 	    stmt.setDate(5, (Date) s.getDate());
 	    stmt.setDouble(6, s.getPurchasePrice());
-	    stmt.setString(7, s.getManufacturer());
+	    stmt.setString(7, s.getManufacturerName());
 	    stmt.setInt(8, s.getQuantity());
 	    stmt.setDouble(9, s.getTotalPurchasePrice());
 	    stmt.setDouble(10, s.getTotalprice());
@@ -229,56 +236,117 @@ public class SaleHandler {
     }
 
     public Vector<String> getManufacturerNames() {
-	    Vector<String> names = null;
-		DbConnection db = DbConnection.getInstance();
-		Connection conn = db.getConnection();
+	Vector<String> names = null;
+	DbConnection db = DbConnection.getInstance();
+	Connection conn = db.getConnection();
 
-		String query = "Select manufacturer from sales;";
-		Statement st = null;
-		try {
-			st = conn.createStatement();
-			ResultSet rs = st.executeQuery(query);
-			if (rs != null) {
-				names = new Vector<String>();
-				while (rs.next()) {
-					names.add(rs.getString("manufacturer"));
-				}
-			}
-		} catch (SQLException e1) {
-			Logger.getGlobal().severe(
-					"Error occured while retrieving manufacturer names: "
-							+ e1.getMessage());
-			System.out.println("SQLException: " + e1.getMessage());
-			e1.printStackTrace();
-			try {
-			    throw new SQLException(
-			    		"Error occured while retrieving manufactrer names"
-			    				+ e1.getMessage());
-			} catch (SQLException e) {
-			    e.printStackTrace();
-			}
-		} finally {
-			try {
-				DbConnection.closeConnection();
-				if (st != null) {
-					st.close();
-				}
-			} catch (SQLException e1) {
-				Logger.getGlobal().severe(
-						"Error occured while closing the database connection: "
-								+ e1.getMessage());
-				System.out.println("SQLException: " + e1.getMessage());
-				e1.printStackTrace();
-				try {
-				    throw new SQLException(
-				    		"Error occured while closing the database connection"
-				    				+ e1.getMessage());
-				} catch (SQLException e) {
-				    e.printStackTrace();
-				}
-			}
+	String query = "Select manufacturer from sales;";
+	Statement st = null;
+	try {
+	    st = conn.createStatement();
+	    ResultSet rs = st.executeQuery(query);
+	    if (rs != null) {
+		names = new Vector<String>();
+		while (rs.next()) {
+		    names.add(rs.getString("manufacturer"));
 		}
-		return names;
+	    }
+	} catch (SQLException e1) {
+	    Logger.getGlobal().severe(
+		    "Error occured while retrieving manufacturer names: "
+			    + e1.getMessage());
+	    System.out.println("SQLException: " + e1.getMessage());
+	    e1.printStackTrace();
+	    try {
+		throw new SQLException(
+			"Error occured while retrieving manufactrer names"
+				+ e1.getMessage());
+	    } catch (SQLException e) {
+		e.printStackTrace();
+	    }
+	} finally {
+	    try {
+		DbConnection.closeConnection();
+		if (st != null) {
+		    st.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while closing the database connection: "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		try {
+		    throw new SQLException(
+			    "Error occured while closing the database connection"
+				    + e1.getMessage());
+		} catch (SQLException e) {
+		    e.printStackTrace();
+		}
+	    }
 	}
-		
+	return names;
+    }
+
+    public void updateSale(Sale b) throws Exception {
+	db = DbConnection.getInstance();
+	Connection conn = db.getConnection();
+	PreparedStatement stmt = null;
+	Statement st = null;
+
+	if (conn == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    /*
+	     * sale_id, itemname varchar(20), description1 varchar(60),
+	     * description2 varchar(60), saleprice double, date date,
+	     * purchaseprice double, manufacturer varchar(20), quantity int(10),
+	     * totalpurchaseprice double, totalprice double
+	     */
+	    st = conn.createStatement();
+	    java.util.Date d = b.getDate();
+	    java.sql.Date date = new java.sql.Date(d == null ? null
+		    : d.getTime());
+	    String query = "Update sales set date = '" + date
+		    + "', itemname = '" + b.getName() + "', description1 = '"
+		    + b.getDescription1() + "', description2 = '"
+		    + b.getDescription2() + "', saleprice = "
+		    + b.getSalePrice() + ", purchaseprice = "
+		    + b.getPurchasePrice() + ", manufacturer = '"
+		    + b.getManufacturerName() + "', quantity = "
+		    + b.getQuantity() + ", totalpurchaseprice = "
+		    + b.getTotalPurchasePrice() + ", totalprice = "
+		    + b.getTotalprice() + " where sale_id = " + b.getSaleId()
+		    + ";";
+	    System.out.println("Query Executed: " + query);
+	    Logger.getGlobal().fine("Query Executed: " + query);
+	    st.execute(query);
+	} catch (SQLException e) {
+	    Logger.getGlobal().severe(
+		    "Error occured while updating - customer<p> "
+			    + e.getMessage());
+	    System.out.println("SQLException: " + e.getMessage());
+	    e.printStackTrace();
+	    throw new Exception("Error! Unable to update - customer. <p>"
+		    + e.getMessage());
+	} finally {
+	    try {
+		if (conn != null) {
+		    conn.close();
+		}
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while updating - customer<p> "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new Exception("Error . Unable to update - customer.<p> "
+			+ e1.getMessage());
+	    }
+	}
+    }
 }

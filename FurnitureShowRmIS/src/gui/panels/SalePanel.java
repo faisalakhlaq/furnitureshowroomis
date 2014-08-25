@@ -18,6 +18,7 @@ import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import model.Sale;
@@ -27,62 +28,44 @@ import org.jdesktop.swingx.JXDatePicker;
 import utils.Helper;
 import database.ManufacturerHandler;
 import database.SaleHandler;
+import database.caller.UpdateSaleCaller;
 
 @SuppressWarnings("serial")
 public class SalePanel extends AbstractPanel {
 
-    private JButton updateBtn = null;
-
+    private JButton editBtn = null;
+    private JButton cancelBtn = null;
     private JButton calculatePriceBtn = new JButton("Calculate Total Price");
-    private JButton deleteBtn = null;
-
     private JButton saveBtn = null;
-
     private JButton exitBtn = null;
-
     private JButton clearBtn = null;
 
     private JLabel saleIdLbl = null;
-
     private JLabel itemLbl = null;
-
     private JLabel discription1Lbl = null;
-
     private JLabel discription2Lbl = null;
-
     private JLabel salePriceLbl = null;
-
     private JLabel dateLbl = null;
-
     private JLabel purchasePriceLbl = null;
-
     private JLabel manufacturerNameLbl = null;
-
     private JLabel quantityLbl = null;
-
     private JLabel totalPriceLbl = null;
     private JLabel totalPurchaseLbl = null;
 
-    private JTextField saleIdTxt = null;
-
-    private JTextField itemNameTxt = null;
-
-    private JTextField discription1Txt = null;
-
-    private JTextField discription2Txt = null;
-
-    private JTextField salePriceTxt = null;
-
-    private JTextField purchasePriceTxt = null;
-
     private JComboBox<String> manufacturerNameCbx = null;
 
+    private JTextField saleIdTxt = null;
+    private JTextField itemNameTxt = null;
+    private JTextField discription1Txt = null;
+    private JTextField discription2Txt = null;
+    private JTextField salePriceTxt = null;
+    private JTextField purchasePriceTxt = null;
     private JTextField quantityTxt = null;
-
     private JTextField totalPriceTxt = null;
     private JTextField totalPurchasePriceTxt = null;
     private JXDatePicker datePicker = null;
 
+    private boolean editMode = false;
     private Sale sale = null;
 
     private JLabel resultMsgLbl;
@@ -104,15 +87,16 @@ public class SalePanel extends AbstractPanel {
     private void fillTextFields() {
 	if (sale == null)
 	    return;
-	saleIdTxt.setText(String.valueOf(sale.getQuantity()));
-	itemNameTxt.setText(sale.getItem());
+	saleIdTxt.setText(String.valueOf(sale.getSaleId()));
+	itemNameTxt.setText(sale.getName());
 	discription1Txt.setText(sale.getDescription1());
 	discription2Txt.setText(sale.getDescription2());
 	salePriceTxt.setText(String.valueOf(sale.getSalePrice()));
 	purchasePriceTxt.setText(String.valueOf(sale.getPurchasePrice()));
 	quantityTxt.setText(String.valueOf(sale.getQuantity()));
 	totalPriceTxt.setText(String.valueOf(sale.getTotalprice()));
-	totalPurchasePriceTxt.setText("0000"); // FIXME
+	totalPurchasePriceTxt.setText(String.valueOf(sale
+		.getTotalPurchasePrice()));
 	datePicker.setDate(sale.getDate());
     }
 
@@ -124,7 +108,6 @@ public class SalePanel extends AbstractPanel {
 	salePriceTxt.setEnabled(enable);
 	purchasePriceTxt.setEnabled(enable);
 	quantityTxt.setEnabled(enable);
-	manufacturerNameCbx.setEnabled(enable);
 	totalPriceTxt.setEnabled(false);
 	totalPurchasePriceTxt.setEnabled(false);
 	datePicker.setEnabled(enable);
@@ -133,23 +116,10 @@ public class SalePanel extends AbstractPanel {
     public GuiPanel getButtonPanel() {
 	GuiPanel buttonPanel = new GuiPanel();
 
-	updateBtn = new JButton("Update");
-	updateBtn.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-
-	    }
-	});
-	deleteBtn = new JButton("Delete");
-	deleteBtn.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-
-	    }
-	});
-
+	editBtn = new JButton("Edit");
+	editBtn.addActionListener(new EditSaleListener());
+	cancelBtn = new JButton("Cancel");
+	cancelBtn.addActionListener(new CancelEditListener());
 	saveBtn = new JButton("Save");
 	saveBtn.addActionListener(new SaveSaleActionListener());
 	clearBtn = new JButton("Clear");
@@ -176,8 +146,8 @@ public class SalePanel extends AbstractPanel {
 		}
 	    }
 	});
-	buttonPanel.add(updateBtn);
-	buttonPanel.add(deleteBtn);
+	buttonPanel.add(cancelBtn);
+	buttonPanel.add(editBtn);
 	buttonPanel.add(saveBtn);
 	buttonPanel.add(clearBtn);
 	buttonPanel.add(exitBtn);
@@ -208,7 +178,6 @@ public class SalePanel extends AbstractPanel {
 	salePriceTxt = new JTextField(15);
 	purchasePriceTxt = new JTextField(15);
 	manufacturerNameCbx = new JComboBox<String>();
-
 	quantityTxt = new JTextField(15);
 	totalPriceTxt = new JTextField(15);
 	totalPurchasePriceTxt = new JTextField(15);
@@ -265,7 +234,7 @@ public class SalePanel extends AbstractPanel {
 	setGridBagConstraints(c, 0, 7, GridBagConstraints.LINE_START, 5, 0);
 	centerPanel.add(manufacturerNameLbl, c);
 
-	setGridBagConstraints(c, 1, 4, GridBagConstraints.LINE_END, 5, 10);
+	setGridBagConstraints(c, 1, 7, GridBagConstraints.LINE_END, 5, 10);
 	centerPanel.add(manufacturerNameCbx, c);
 
 	setGridBagConstraints(c, 0, 8, GridBagConstraints.LINE_START, 5, 0);
@@ -349,7 +318,7 @@ public class SalePanel extends AbstractPanel {
 	c.gridy = gridy;
 	c.gridwidth = 1;
     }
-   
+
     private class SaveSaleActionListener implements ActionListener {
 
 	@Override
@@ -357,39 +326,40 @@ public class SalePanel extends AbstractPanel {
 	    try {
 		Sale s = new Sale();
 
-		String tempVariable = itemNameTxt.getText();
-		s.setItem(tempVariable);
-		tempVariable = discription1Txt.getText();
-		s.setDescription1(tempVariable);
-		tempVariable = discription2Txt.getText();
-		s.setDescription2(tempVariable);
-		tempVariable = salePriceTxt.getText();
-		if (!Helper.isEmpty(tempVariable)
-			&& Helper.isDigit(tempVariable)) {
-		    s.setSalePrice(Integer.valueOf(tempVariable));
-		} else if (!Helper.isEmpty(tempVariable)
-			&& !Helper.isDigit(tempVariable)) {
-		    throw new Exception("Sale price can only be digits");
-		}
-		String purchasePrice = purchasePriceTxt.getText();
-		if (!Helper.isEmpty(purchasePrice)
-			&& Helper.isDigit(purchasePrice)) {
-		    s.setPurchaseprice(Integer.valueOf(purchasePrice));
-		} else if (!Helper.isEmpty(purchasePrice)
-			&& !Helper.isDigit(purchasePrice)) {
-		    throw new Exception("Purchase Price can only be digits");
-		}
-		
-		String quantity = quantityTxt.getText();
-		if (!Helper.isEmpty(quantity) && Helper.isDigit(quantity)) {
-		    s.setQuantity(Integer.valueOf(quantity));
-		} else if (!Helper.isEmpty(quantity)
-			&& !Helper.isDigit(quantity)) {
-		    throw new Exception("Quantity can only be digits");
-		}
-
-		s.setTotalprice(calculateTotalPrice());
-		s.setTotalPurchasePrice(calculateTotalPurchasePrice());
+		// String tempVariable = itemNameTxt.getText();
+		// s.setName(tempVariable);
+		// tempVariable = discription1Txt.getText();
+		// s.setDescription1(tempVariable);
+		// tempVariable = discription2Txt.getText();
+		// s.setDescription2(tempVariable);
+		// tempVariable = salePriceTxt.getText();
+		// if (!Helper.isEmpty(tempVariable)
+		// && Helper.isDigit(tempVariable)) {
+		// s.setSalePrice(Integer.valueOf(tempVariable));
+		// } else if (!Helper.isEmpty(tempVariable)
+		// && !Helper.isDigit(tempVariable)) {
+		// throw new Exception("Sale price can only be digits");
+		// }
+		// String purchasePrice = purchasePriceTxt.getText();
+		// if (!Helper.isEmpty(purchasePrice)
+		// && Helper.isDigit(purchasePrice)) {
+		// s.setPurchaseprice(Integer.valueOf(purchasePrice));
+		// } else if (!Helper.isEmpty(purchasePrice)
+		// && !Helper.isDigit(purchasePrice)) {
+		// throw new Exception("Purchase Price can only be digits");
+		// }
+		//
+		// String quantity = quantityTxt.getText();
+		// if (!Helper.isEmpty(quantity) && Helper.isDigit(quantity)) {
+		// s.setQuantity(Integer.valueOf(quantity));
+		// } else if (!Helper.isEmpty(quantity)
+		// && !Helper.isDigit(quantity)) {
+		// throw new Exception("Quantity can only be digits");
+		// }
+		//
+		// s.setTotalPrice(calculateTotalPrice());
+		// s.setTotalPurchasePrice(calculateTotalPurchasePrice());
+		s = getTextFieldValues();
 		SaleHandler salehandler = new SaleHandler();
 		salehandler.saveSale(s);
 		clearTextFields();
@@ -413,8 +383,8 @@ public class SalePanel extends AbstractPanel {
 	if (!Helper.isEmpty(price) && !Helper.isDigit(price)) {
 	    throw new Exception("Sale price can only be digits");
 	}
-	int q = quantity.isEmpty() ? 1 : Integer.valueOf(quantity);
-	int p = price.isEmpty() ? 0 : Integer.valueOf(price);
+	double q = quantity.isEmpty() ? 1 : Double.valueOf(quantity);
+	double p = price.isEmpty() ? 0 : Double.valueOf(price);
 
 	totalPrice = q * p;
 	totalPriceTxt.setText(String.valueOf(totalPrice));
@@ -435,8 +405,8 @@ public class SalePanel extends AbstractPanel {
 	    throw new Exception("Quantity can only be digits");
 	}
 
-	int q = quantity.isEmpty() ? 1 : Integer.valueOf(quantity);
-	int pp = purchasePrice.isEmpty() ? 0 : Integer.valueOf(purchasePrice);
+	double q = quantity.isEmpty() ? 1 : Double.valueOf(quantity);
+	double pp = purchasePrice.isEmpty() ? 0 : Double.valueOf(purchasePrice);
 
 	totalPrice = pp * q;
 	totalPurchasePriceTxt.setText("" + totalPrice);
@@ -445,7 +415,7 @@ public class SalePanel extends AbstractPanel {
 
     }
 
-public void populateManufacturerNameCbx() {
+    public void populateManufacturerNameCbx() {
 	if (manufacturerNameCbx == null) {
 	    manufacturerNameCbx = new JComboBox<String>();
 	}
@@ -463,8 +433,109 @@ public void populateManufacturerNameCbx() {
 	    manufacturerNameCbx
 		    .setModel(new javax.swing.DefaultComboBoxModel<String>(
 			    names));
+	    if (sale != null) {
+		manufacturerNameCbx.setSelectedItem(sale.getManufacturerName());
+	    }
 	}
-   }
+    }
 
+    private Sale getTextFieldValues() {
+	Sale s = new Sale();
+	try {
+	    s.setSaleId(Integer.valueOf(saleIdTxt.getText()));
+	    s.setName(itemNameTxt.getText());
+	    s.setDescription1(discription1Txt.getText());
+	    s.setDescription2(discription2Txt.getText());
+	    String strPrice = salePriceTxt.getText();
+	    double price = 0;
+	    if (!Helper.isEmpty(strPrice) && Helper.isDigit(strPrice)) {
+		price = Double.valueOf(strPrice);
+	    }
+	    s.setSalePrice(price);
+	    String strPP = purchasePriceTxt.getText();
+	    double pp = 0;
+	    if (!Helper.isEmpty(strPP) && Helper.isDigit(strPP)) {
+		pp = Double.valueOf(strPP);
+	    }
+	    s.setPurchaseprice(pp);
+	    String qty = quantityTxt.getText();
+	    int quantity = 1;
+	    if (!Helper.isEmpty(qty) && Helper.isDigit(qty)) {
+		quantity = Integer.valueOf(qty);
+	    }
+	    s.setQuantity(quantity);
+
+	    s.setTotalPrice(calculateTotalPrice());
+	    s.setTotalPurchasePrice(calculateTotalPurchasePrice());
+
+	    s.setDate(datePicker.getDate());
+	    s.setManufacturerName(String.valueOf(manufacturerNameCbx
+		    .getSelectedItem()));
+	} catch (Exception e) {
+	    // TODO
+	    e.printStackTrace();
+	}
+	return s;
+    }
+
+    private void setEditMode(boolean b) {
+	this.editMode = b;
+	enableTextFields(b);
+	if (editMode) {
+	    editBtn.setText("Update");
+	} else {
+	    editBtn.setText("Edit");
+	}
+    }
+
+    private void showCancelBtn() {
+	cancelBtn.setVisible(editMode);
+    }
+
+    private boolean isInEditMode() {
+	return editMode;
+    }
+
+    private class CancelEditListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    setEditMode(false);
+	    showCancelBtn();
+	}
+
+    }
+
+    private class EditSaleListener implements ActionListener {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    if (isInEditMode()) {
+		Sale c = getTextFieldValues();
+
+		// if the current values are equal to the sale object then
+		// do not update
+		if (!sale.equals(c)) {
+		    try {
+			UpdateSaleCaller.perform(c);
+			sale = c;
+			new MessageDialog("Update Successful",
+				"Customer was updated successfully",
+				JOptionPane.INFORMATION_MESSAGE);
+		    } catch (Exception e) {
+			new MessageDialog("Error", e.getMessage());
+		    }
+		} else {
+		    new MessageDialog("Result", "No values were changed",
+			    JOptionPane.INFORMATION_MESSAGE);
+		}
+		setEditMode(false); // once the sale is edited the panel
+		// will go back to un-editable mode
+		showCancelBtn(); // hide the cancel button
+	    } else {
+		setEditMode(true);
+		showCancelBtn();
+	    }
+	}
+    }
 }
-

@@ -7,6 +7,8 @@ import gui.searchpanels.SearchManufacturerPanel;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.JOptionPane;
+
 import callers.ISCaller;
 
 import model.Manufacturer;
@@ -25,10 +27,15 @@ public class SearchManufacturerCaller extends ISCaller {
 	    ManufacturerHandler handler = new ManufacturerHandler();
 	    try {
 		Manufacturer m = handler.searchManufacturer(panel.getMId());
-
-		ClosePanelCaller.perform(panel);
-		ManufacturerPanelCaller caller = new ManufacturerPanelCaller(m);
-		caller.perform();
+		if (m != null) {
+		    ClosePanelCaller.perform(panel);
+		    ManufacturerPanelCaller caller = new ManufacturerPanelCaller(
+			    m);
+		    caller.perform();
+		} else {
+		    new MessageDialog("Sorry", "No manufactuer found",
+			    JOptionPane.INFORMATION_MESSAGE);
+		}
 	    } catch (Exception e) {
 		new MessageDialog("Error", e.getMessage());
 	    }

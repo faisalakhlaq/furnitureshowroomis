@@ -6,6 +6,13 @@ public class Helper {
 
     public static boolean isDigit(String data) {
 	boolean isDigit = false;
+
+	{
+	    // check if the provided value contains decimal point then remove it
+	    int dotIndex = data.indexOf(".");
+	    if (dotIndex != -1)
+		data = data.substring(0, dotIndex);
+	}
 	String regex = "\\d+";
 	isDigit = data.matches(regex);
 	return isDigit;

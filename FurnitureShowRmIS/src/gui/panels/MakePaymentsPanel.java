@@ -23,7 +23,6 @@ import model.Payments;
 import org.jdesktop.swingx.JXDatePicker;
 
 import database.ManufacturerHandler;
-import database.PaymentsHandler;
 
 @SuppressWarnings("serial")
 public class MakePaymentsPanel extends AbstractPanel {

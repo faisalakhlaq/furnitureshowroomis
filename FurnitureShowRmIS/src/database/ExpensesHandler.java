@@ -267,4 +267,55 @@ public class ExpensesHandler {
 	    }
 	}
     }
+
+    public void updateExpenses(Expenses b) throws Exception {
+	db = DbConnection.getInstance();
+	Connection conn = db.getConnection();
+	PreparedStatement stmt = null;
+	Statement st = null;
+
+	if (conn == null) {
+	    throw new Exception("Unable to connect to the database!");
+	}
+	try {
+	    st = conn.createStatement();
+	    java.util.Date d = b.getDate();
+	    java.sql.Date date = new java.sql.Date(d == null ? null
+		    : d.getTime());
+	    String query = "Update sales set date = '" + date + "', title = '"
+		    + b.getTitle() + "', description = '" + b.getDescription()
+		    + "', amount = '" + b.getAmount() + "', EXPENSE_ID = "
+		    + b.getId() + ",  = "
+
+		    + ";";
+	    System.out.println("Query Executed: " + query);
+	    Logger.getGlobal().fine("Query Executed: " + query);
+	    st.execute(query);
+	} catch (SQLException e) {
+	    Logger.getGlobal().severe(
+		    "Error occured while updating - customer<p> "
+			    + e.getMessage());
+	    System.out.println("SQLException: " + e.getMessage());
+	    e.printStackTrace();
+	    throw new Exception("Error! Unable to update - customer. <p>"
+		    + e.getMessage());
+	} finally {
+	    try {
+		if (conn != null) {
+		    conn.close();
+		}
+		if (stmt != null) {
+		    stmt.close();
+		}
+	    } catch (SQLException e1) {
+		Logger.getGlobal().severe(
+			"Error occured while updating - customer<p> "
+				+ e1.getMessage());
+		System.out.println("SQLException: " + e1.getMessage());
+		e1.printStackTrace();
+		throw new Exception("Error . Unable to update - customer.<p> "
+			+ e1.getMessage());
+	    }
+	}
+    }
 }
